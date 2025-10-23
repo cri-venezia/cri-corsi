@@ -1,0 +1,73 @@
+# Nome del Workflow
+name: Create Plugin Release
+
+# Trigger: si attiva quando viene pubblicato un nuovo tag che inizia con 'v' (es. v1.0.0, v1.2.3)
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Definisce i job da eseguire
+jobs:
+  build_and_release:
+    # Nome del Job
+    name: Build and Release Plugin Zip
+    # Sistema operativo su cui eseguire il job
+    runs-on: ubuntu-latest
+    # Aggiunge i permessi necessari per creare la release e caricare l'asset
+    permissions:
+      contents: write
+
+    # Passaggi del job
+    steps:
+      # 1. Checkout del codice dal repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup di PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2' # Assicurati che corrisponda al tuo requisito minimo
+          extensions: mbstring, zip # Estensioni PHP necessarie
+          coverage: none # Non serve la code coverage
+          tools: composer # Installa Composer
+
+      # 3. Installa TUTTE le dipendenze (incluse quelle di sviluppo per scssphp)
+      - name: Install all Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # 4. Compila SCSS in CSS
+      - name: Compile SCSS to CSS
+        run: php bin/compile-scss.php # Chiamiamo lo script direttamente
+
+      # 5. Pulisce le dipendenze per la produzione (Prune dev dependencies)
+      - name: Prune dev dependencies for production
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      # 6. Crea l'archivio ZIP del plugin
+      - name: Create plugin archive
+        run: |
+          # Nome della cartella del plugin (lo slug)
+          PLUGIN_SLUG="cri-corsi" # <-- CORRETTO
+          # Nome del file ZIP basato sul tag Git
+          ZIP_FILE="${PLUGIN_SLUG}-$(echo ${GITHUB_REF#refs/tags/}).zip"
+          # Crea la directory di build temporanea
+          mkdir -p build/${PLUGIN_SLUG}
+          # Copia i file necessari nell'archivio (escludendo file/cartelle di sviluppo)
+          rsync -rc --exclude='.git/' --exclude='.github/' --exclude='.editorconfig' --exclude='bin/' --exclude='assets/scss/' --exclude='composer.json' --exclude='composer.lock' --exclude='refactor_roadmap.md' --exclude='renovate.json' ./ build/${PLUGIN_SLUG}/
+          # Entra nella cartella di build e crea lo zip
+          cd build
+          zip -r ../${ZIP_FILE} ./${PLUGIN_SLUG}
+          cd ..
+          echo "ZIP_FILE_NAME=${ZIP_FILE}" >> $GITHUB_ENV
+
+      # 7. Crea la Release su GitHub e carica lo ZIP
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Aggiunto esplicitamente per robustezza
+          # Il token GitHub viene fornito automaticamente dall'action
+          files: ${{ env.ZIP_FILE_NAME }} # Il file ZIP da allegare
+          generate_release_notes: true # Genera automaticamente le note di rilascio
+

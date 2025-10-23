@@ -1,0 +1,167 @@
+/**
+ * Stili SCSS per il Frontend del plugin CRI Corsi.
+ */
+
+// --- Variabili ---
+$cri-red: #CC0000;
+$cri-red-darker: #a30000;
+$border-color: #ddd;
+$card-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+$border-radius: 8px;
+
+// --- WRAPPER SPECIFICO PER ELEMENTOR ---
+// Aumenta la specificità per evitare sovrascritture da parte di Elementor
+.elementor-widget-cri-corsi-griglia {
+
+  // --- Griglia Principale ---
+  .cri-corsi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+
+  // --- Card Singola ---
+  .cri-corso-card {
+    background: #fff;
+    border-radius: $border-radius;
+    box-shadow: $card-shadow;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    // Immagine
+    .cri-corso-image {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    // Contenuto
+    .cri-corso-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1; // Fa sì che il contenuto occupi lo spazio e spinga il form in basso
+    }
+
+    .cri-corso-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    // Prezzo
+    .cri-corso-prezzo {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: $cri-red;
+      margin-bottom: 1rem;
+    }
+
+    // Mappa
+    .cri-corso-map {
+      height: 200px;
+      width: 100%;
+      border-radius: $border-radius;
+      margin-bottom: 1rem;
+      border: 1px solid $border-color;
+    }
+
+    .cri-corso-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      flex-grow: 1; // Spinge il form in fondo alla card
+    }
+
+    // Form di Prenotazione
+    .cri-corso-booking-form {
+      margin-top: auto; // Spinge il form in fondo
+
+      .cri-form-group {
+        margin-bottom: 1rem;
+
+        label {
+          display: block;
+          font-weight: 600;
+          margin-bottom: 0.4rem;
+          font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid $border-color;
+          border-radius: $border-radius;
+          box-sizing: border-box; // Assicura che padding non alteri la larghezza
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: $cri-red;
+            box-shadow: 0 0 0 2px rgba($cri-red, 0.2);
+          }
+        }
+
+        select {
+          // Stile per il selettore
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333'%3E%3Cpath d='M6 9l-6-6h12z'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 1rem center;
+          background-size: 10px;
+          padding-right: 2.5rem; // Spazio per la freccia
+
+          option:disabled {
+            color: #aaa;
+            background: #f9f9f9;
+          }
+        }
+      }
+
+      .cri-form-submit {
+        margin-top: 1.5rem;
+
+        .cri-corso-button {
+          width: 100%;
+          padding: 0.85rem 1rem;
+          background-color: $cri-red;
+          color: #fff;
+          border: none;
+          border-radius: $border-radius;
+          font-size: 1rem;
+          font-weight: 700;
+          cursor: pointer;
+          text-align: center;
+          text-decoration: none;
+          transition: background-color 0.3s ease;
+
+          &:hover,
+          &:focus {
+            background-color: $cri-red-darker;
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+
+} // --- Fine .elementor-widget-cri-corsi-griglia
+
