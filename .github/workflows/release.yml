@@ -55,7 +55,7 @@ jobs:
           # Crea la directory di build temporanea
           mkdir -p build/${PLUGIN_SLUG}
           # Copia i file necessari nell'archivio (escludendo file/cartelle di sviluppo)
-          rsync -rc --exclude='.git/' --exclude='.github/' --exclude='.editorconfig' --exclude='bin/' --exclude='assets/scss/' --exclude='composer.json' --exclude='composer.lock' --exclude='refactor_roadmap.md' --exclude='renovate.json' ./ build/${PLUGIN_SLUG}/
+          rsync -rc --exclude='.git/' --exclude='.github/' --exclude='.editorconfig' --exclude='bin/' --exclude='assets/scss/' --exclude='composer.json' --exclude='composer.lock' --exclude='refactor_roadmap.md' --exclude='README.md' --exclude='contributing.md' --exclude='renovate.json' ./ build/${PLUGIN_SLUG}/
           # Entra nella cartella di build e crea lo zip
           cd build
           zip -r ../${ZIP_FILE} ./${PLUGIN_SLUG}
