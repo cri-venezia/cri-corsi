@@ -34,8 +34,8 @@ class User_Roles {
 	 * Costruttore.
 	 */
 	public function __construct() {
-		// Registra il ruolo all'attivazione del plugin
-		register_activation_hook( \CRICorsi\CRI_Corsi::instance()->get_plugin_file(), [ $this, 'add_custom_role' ] );
+		// **RIMOSSO** l'hook di attivazione da qui per evitare loop infiniti.
+		// Sarà chiamato dal file principale del plugin.
 
 		// Pulisce il menu di amministrazione e gestisce i redirect
 		add_action( 'admin_init', [ $this, 'redirect_non_admin_docente' ] );
@@ -45,8 +45,10 @@ class User_Roles {
 	/**
 	 * Aggiunge il ruolo personalizzato "Docente" al database di WordPress.
 	 * Si esegue solo all'attivazione del plugin.
+	 *
+	 * **MODIFICATO:** Reso 'static' per essere chiamato dall'hook di attivazione.
 	 */
-	public function add_custom_role(): void {
+	public static function add_custom_role(): void {
 		// Aggiungiamo il ruolo solo se non esiste già
 		if ( get_role( self::ROLE_ID ) ) {
 			return;

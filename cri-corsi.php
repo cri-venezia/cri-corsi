@@ -3,10 +3,11 @@
  * Plugin Name: CRI Corsi
  * Plugin URI:  https://github.com/cri-venezia/cri-corsi
  * Description: Un plugin per la gestione avanzata e la prenotazione dei corsi della Croce Rossa Italiana, con integrazione Elementor e WooCommerce.
- * Version:     1.0.5
+ * Version:     1.0.7
  * Author:      Luca
  * Author URI:  mailto:luca.forzutti@veneto.cri.it
- * License:     Proprietary
+ * License:     GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: cri-corsi
  * Domain Path: /languages
  * Requires PHP: 8.2
@@ -24,6 +25,7 @@ if ( ! file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	// Gestisce il caso in cui le dipendenze non siano installate.
 	add_action( 'admin_notices', function() {
 		echo '<div class="notice notice-error"><p>';
+		// **CORREZIONE**: Aggiunto un backslash per "escapare" l'apostrofo in "l'installazione"
 		echo esc_html__( 'Il plugin CRI Corsi richiede l\'installazione delle dipendenze di Composer. Esegui "composer install".', 'cri-corsi' );
 		echo '</p></div>';
 	});
@@ -39,7 +41,7 @@ use CRICorsi\Includes\Admin_Columns;
 use CRICorsi\Includes\Admin\Teacher_Panel;
 use CRICorsi\Includes\Plugin_Updater;
 use CRICorsi\Includes\Elementor\Elementor_Widgets;
-use CRICorsi\Includes\User_Roles; // <-- AGGIUNTO
+use CRICorsi\Includes\User_Roles;
 
 /**
  * Classe principale del plugin CRI Corsi.
@@ -50,7 +52,7 @@ final class CRI_Corsi {
 	/**
 	 * Versione corrente del plugin.
 	 */
-	private const VERSION = '1.0.5';
+	private const VERSION = '1.0.7';
 
 	/**
 	 * URL della directory principale del plugin.
@@ -128,7 +130,7 @@ final class CRI_Corsi {
 		new Plugin_Updater();
 		new Elementor_Widgets();
 		new Teacher_Panel();
-		new User_Roles(); // <-- AGGIUNTO
+		new User_Roles();
 	}
 
 	/**
@@ -215,3 +217,5 @@ final class CRI_Corsi {
 // Avvia il plugin
 CRI_Corsi::instance();
 
+// **CORREZIONE**: Registra l'hook di attivazione qui, in modo statico e sicuro.
+register_activation_hook( __FILE__, [ '\CRICorsi\Includes\User_Roles', 'add_custom_role' ] );
