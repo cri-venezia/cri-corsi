@@ -34,10 +34,7 @@ class User_Roles {
 	 * Costruttore.
 	 */
 	public function __construct() {
-		// **RIMOSSO** l'hook di attivazione da qui per evitare loop infiniti.
-		// Sarà chiamato dal file principale del plugin.
-
-		// Pulisce il menu di amministrazione e gestisce i redirect
+		// NOTA: L'hook di attivazione è stato spostato nel file principale (cri-corsi.php) per evitare loop.
 		add_action( 'admin_init', [ $this, 'redirect_non_admin_docente' ] );
 		add_action( 'admin_menu', [ $this, 'cleanup_admin_menu' ], 999 );
 	}
@@ -45,8 +42,7 @@ class User_Roles {
 	/**
 	 * Aggiunge il ruolo personalizzato "Docente" al database di WordPress.
 	 * Si esegue solo all'attivazione del plugin.
-	 *
-	 * **MODIFICATO:** Reso 'static' per essere chiamato dall'hook di attivazione.
+	 * METODO STATICO CHIAMATO DA cri-corsi.php
 	 */
 	public static function add_custom_role(): void {
 		// Aggiungiamo il ruolo solo se non esiste già
@@ -89,7 +85,7 @@ class User_Roles {
 			return;
 		}
 
-		// **NON PULIRE IL MENU SE L'UTENTE È ANCHE UN ADMIN**
+		// **CORREZIONE**: NON PULIRE IL MENU SE L'UTENTE È ANCHE UN ADMIN
 		if ( user_can( $user, 'manage_options' ) ) {
 			return;
 		}
@@ -134,7 +130,7 @@ class User_Roles {
 			return;
 		}
 
-		// **CORREZIONE 1: Non re-indirizzare mai un Amministratore**
+		// **CORREZIONE 1**: Non re-indirizzare mai un Amministratore
 		if ( user_can( $user, 'manage_options' ) ) {
 			return;
 		}
@@ -151,7 +147,7 @@ class User_Roles {
 			'index.php',        // Bacheca
 			'profile.php',      // Profilo
 			'admin.php',        // Necessario per le nostre pagine custom
-			'plugins.php',      // **CORREZIONE 2: Permetti l'accesso a plugins.php (per l'attivazione)**
+			'plugins.php',      // **CORREZIONE 2**: Permetti l'accesso a plugins.php (per l'attivazione)
 		];
 
 		// Se la pagina non è consentita...
@@ -168,4 +164,3 @@ class User_Roles {
 		}
 	}
 }
-
