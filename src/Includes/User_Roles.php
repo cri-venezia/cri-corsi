@@ -122,13 +122,15 @@ class User_Roles {
 	 * se provano a raggiungerle via URL diretto.
 	 */
 	public function redirect_non_admin_docente(): void {
-		$user = wp_get_current_user();
+		global $pagenow;
 
-		// Esegui solo se l'utente ha il ruolo "cri_docente"
-		// e non siamo in una chiamata AJAX o POST
-		if ( ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ( defined( 'DOING_CRON' ) && DOING_CRON ) || $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+		// **CORREZIONE DEFINITIVA**: Interrompi subito se siamo su plugins.php (attivazione)
+		// o se siamo in una chiamata AJAX/CRON/POST.
+		if ( $pagenow === 'plugins.php' || wp_doing_ajax() || wp_doing_cron() || $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			return;
 		}
+
+		$user = wp_get_current_user();
 
 		// **CORREZIONE 1**: Non re-indirizzare mai un Amministratore
 		if ( user_can( $user, 'manage_options' ) ) {
@@ -140,14 +142,11 @@ class User_Roles {
 			return;
 		}
 
-		// Globale che tiene traccia della pagina corrente
-		global $pagenow;
-
 		$allowed_pages = [
 			'index.php',        // Bacheca
 			'profile.php',      // Profilo
 			'admin.php',        // Necessario per le nostre pagine custom
-			'plugins.php',      // **CORREZIONE 2**: Permetti l'accesso a plugins.php (per l'attivazione)
+			// 'plugins.php' è ora gestito dal controllo in cima
 		];
 
 		// Se la pagina non è consentita...
@@ -164,3 +163,4 @@ class User_Roles {
 		}
 	}
 }
+

@@ -3,7 +3,7 @@
  * Plugin Name: CRI Corsi
  * Plugin URI:  https://github.com/cri-venezia/cri-corsi
  * Description: Un plugin per la gestione avanzata e la prenotazione dei corsi della Croce Rossa Italiana, con integrazione Elementor e WooCommerce.
- * Version:     1.0.8
+ * Version:     1.0.9
  * Author:      Luca
  * Author URI:  mailto:luca.forzutti@veneto.cri.it
  * License:     GPL-2.0-or-later
@@ -52,7 +52,7 @@ final class CRI_Corsi {
 	/**
 	 * Versione corrente del plugin.
 	 */
-	private const VERSION = '1.0.8';
+	private const VERSION = '1.0.9';
 
 	/**
 	 * URL della directory principale del plugin.
