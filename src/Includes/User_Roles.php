@@ -7,8 +7,6 @@
 
 namespace CRICorsi\Includes;
 
-use CRICorsi\CRI_Corsi;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -23,13 +21,13 @@ class User_Roles {
 	 * ID del ruolo personalizzato.
 	 * @var string
 	 */
-	public const string ROLE_ID = 'cri_docente';
+	public const ROLE_ID = 'cri_docente';
 
 	/**
 	 * Nuova capability personalizzata per il pannello docente.
 	 * @var string
 	 */
-	public const string CAPABILITY = 'manage_cri_course_dates';
+	public const CAPABILITY = 'manage_cri_course_dates';
 
 
 	/**
@@ -37,7 +35,7 @@ class User_Roles {
 	 */
 	public function __construct() {
 		// Registra il ruolo all'attivazione del plugin
-		register_activation_hook( CRI_Corsi::instance()->get_plugin_file(), [ $this, 'add_custom_role' ] );
+		register_activation_hook( \CRICorsi\CRI_Corsi::instance()->get_plugin_file(), [ $this, 'add_custom_role' ] );
 
 		// Pulisce il menu di amministrazione e gestisce i redirect
 		add_action( 'admin_init', [ $this, 'redirect_non_admin_docente' ] );
@@ -89,6 +87,11 @@ class User_Roles {
 			return;
 		}
 
+		// **NON PULIRE IL MENU SE L'UTENTE È ANCHE UN ADMIN**
+		if ( user_can( $user, 'manage_options' ) ) {
+			return;
+		}
+
 		global $menu, $submenu;
 
 		// Lista dei menu da mantenere (slug)
@@ -129,6 +132,12 @@ class User_Roles {
 			return;
 		}
 
+		// **CORREZIONE 1: Non re-indirizzare mai un Amministratore**
+		if ( user_can( $user, 'manage_options' ) ) {
+			return;
+		}
+
+		// Esegui solo se l'utente è un docente (e non un admin)
 		if ( ! in_array( self::ROLE_ID, $user->roles, true ) ) {
 			return;
 		}
@@ -140,7 +149,7 @@ class User_Roles {
 			'index.php',        // Bacheca
 			'profile.php',      // Profilo
 			'admin.php',        // Necessario per le nostre pagine custom
-			// 'admin-post.php' è gestito dal check sul POST all'inizio
+			'plugins.php',      // **CORREZIONE 2: Permetti l'accesso a plugins.php (per l'attivazione)**
 		];
 
 		// Se la pagina non è consentita...
@@ -157,3 +166,4 @@ class User_Roles {
 		}
 	}
 }
+
