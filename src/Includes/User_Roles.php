@@ -35,8 +35,28 @@ class User_Roles {
 	 */
 	public function __construct() {
 		// NOTA: L'hook di attivazione è stato spostato nel file principale (cri-corsi.php) per evitare loop.
-		add_action( 'admin_init', [ $this, 'redirect_non_admin_docente' ] );
-		add_action( 'admin_menu', [ $this, 'cleanup_admin_menu' ], 999 );
+
+		// **NUOVA LOGICA**: Aggiungi gli hook solo se necessario
+		add_action( 'init', [ $this, 'conditionally_add_hooks' ] );
+	}
+
+	/**
+	 * Aggiunge gli hook di admin solo per gli utenti "Docente" (e non admin).
+	 * Questo previene i loop di re-indirizzamento per gli amministratori.
+	 */
+	public function conditionally_add_hooks(): void {
+		// Non fare nulla se l'utente non è loggato
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		$user = wp_get_current_user();
+
+		// Aggiungi gli hook solo se l'utente ha il ruolo 'docente' E NON è un amministratore.
+		if ( in_array( self::ROLE_ID, $user->roles, true ) && ! user_can( $user, 'manage_options' ) ) {
+			add_action( 'admin_init', [ $this, 'redirect_non_admin_docente' ] );
+			add_action( 'admin_menu', [ $this, 'cleanup_admin_menu' ], 999 );
+		}
 	}
 
 	/**
@@ -75,20 +95,10 @@ class User_Roles {
 
 	/**
 	 * Pulisce la bacheca per il ruolo "Docente".
-	 * Lascia solo la Bacheca e la pagina "Gestione Date".
+	 * Questa funzione ora viene chiamata solo per i docenti (non admin).
 	 */
 	public function cleanup_admin_menu(): void {
-		$user = wp_get_current_user();
-
-		// Esegui solo se l'utente ha il ruolo "cri_docente"
-		if ( ! in_array( self::ROLE_ID, $user->roles, true ) ) {
-			return;
-		}
-
-		// **CORREZIONE**: NON PULIRE IL MENU SE L'UTENTE È ANCHE UN ADMIN
-		if ( user_can( $user, 'manage_options' ) ) {
-			return;
-		}
+		// Il controllo sull'utente è già stato fatto in conditionally_add_hooks()
 
 		global $menu, $submenu;
 
@@ -120,25 +130,14 @@ class User_Roles {
 	/**
 	 * Impedisce ai docenti di accedere ad altre pagine admin
 	 * se provano a raggiungerle via URL diretto.
+	 * Questa funzione ora viene chiamata solo per i docenti (non admin).
 	 */
 	public function redirect_non_admin_docente(): void {
 		global $pagenow;
 
-		// **CORREZIONE DEFINITIVA**: Interrompi subito se siamo su plugins.php (attivazione)
-		// o se siamo in una chiamata AJAX/CRON/POST.
-		if ( $pagenow === 'plugins.php' || wp_doing_ajax() || wp_doing_cron() || $_SERVER['REQUEST_METHOD'] === 'POST' ) {
-			return;
-		}
-
-		$user = wp_get_current_user();
-
-		// **CORREZIONE 1**: Non re-indirizzare mai un Amministratore
-		if ( user_can( $user, 'manage_options' ) ) {
-			return;
-		}
-
-		// Esegui solo se l'utente è un docente (e non un admin)
-		if ( ! in_array( self::ROLE_ID, $user->roles, true ) ) {
+		// Sappiamo già che l'utente è un docente e non un admin.
+		// Dobbiamo solo fermare i redirect durante AJAX, CRON o POST.
+		if ( wp_doing_ajax() || wp_doing_cron() || $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 			return;
 		}
 
@@ -146,7 +145,6 @@ class User_Roles {
 			'index.php',        // Bacheca
 			'profile.php',      // Profilo
 			'admin.php',        // Necessario per le nostre pagine custom
-			// 'plugins.php' è ora gestito dal controllo in cima
 		];
 
 		// Se la pagina non è consentita...
