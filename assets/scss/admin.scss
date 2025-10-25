@@ -1,0 +1,182 @@
+// Variabili Colore Admin (simili al frontend ma potresti volerle diverse)
+$cri-red-admin: #CC0000;
+$admin-grey: #f0f0f1;
+$admin-border: #ccd0d4;
+$admin-text: #2c3338;
+$admin-link: #007cba;
+$admin-link-hover: darken($admin-link, 15%);
+$status-confirmed-bg: #e0f2d9; // Verde chiaro
+$status-confirmed-text: #3c763d;
+$status-pending-bg: #fff3cd; // Giallo chiaro
+$status-pending-text: #8a6d3b;
+$status-draft-bg: #f2f2f2; // Grigio chiaro
+$status-draft-text: #666;
+
+/* Stili per la Meta Box del Ripetitore */
+.cri-repeater-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+
+  th, td {
+    border: 1px solid $admin-border;
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    background-color: $admin-grey;
+    font-weight: bold;
+  }
+
+  input[type="date"],
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+
+  // Riduce larghezza per data e numero
+  td:first-child,
+  td:last-child {
+    width: 150px;
+  }
+  // Riduce larghezza per il pulsante
+  td:nth-last-child(2) {
+    width: 50px;
+    text-align: center;
+  }
+
+  .button.remove-row {
+    color: #b32d2e;
+    border-color: #b32d2e;
+    background: #f9f9f9;
+    vertical-align: middle; // Allinea meglio il pulsante
+    &:hover, &:focus {
+      background: #b32d2e;
+      color: #fff;
+    }
+  }
+}
+
+#cri-repeater-template {
+  display: none; // Nasconde la riga template
+}
+
+.add-row-button-wrapper {
+  margin-top: 15px;
+}
+
+/* Stili Generali per Meta Box */
+.cri-meta-box-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+}
+
+/* Stili per le Colonne Admin delle Prenotazioni */
+.wp-list-table {
+  .column-stato {
+    width: 150px; // Larghezza fissa per la colonna stato
+  }
+}
+
+.cri-status-label {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+
+  &.status-confirmed {
+    background-color: $status-confirmed-bg;
+    color: $status-confirmed-text;
+    border: 1px solid darken($status-confirmed-bg, 10%);
+  }
+  &.status-pending {
+    background-color: $status-pending-bg;
+    color: $status-pending-text;
+    border: 1px solid darken($status-pending-bg, 10%);
+  }
+  &.status-draft {
+    background-color: $status-draft-bg;
+    color: $status-draft-text;
+    border: 1px solid darken($status-draft-bg, 10%);
+  }
+}
+
+/* Stili per il Pannello Docente */
+.cri-admin-panel {
+  .cri-course-selector-form {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cri-label {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+
+  hr {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+
+  .cri-panel-columns {
+    display: grid;
+    grid-template-columns: 1fr 2fr; // Colonna sinistra più stretta
+    gap: 30px;
+  }
+
+  .cri-admin-form {
+    .cri-form-group {
+      margin-bottom: 15px;
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input[type="date"],
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+      }
+    }
+  }
+
+  // Stili per la tabella nel pannello docente (eredita da .wp-list-table)
+  .wp-list-table {
+    td:last-child { // Colonna Azione
+      width: 80px;
+    }
+  }
+}
+
+// Media query per schermi piccoli (adatta le colonne del pannello docente)
+@media screen and (max-width: 782px) {
+  .cri-admin-panel .cri-panel-columns {
+    grid-template-columns: 1fr; // Colonne impilate
+  }
+}
+
