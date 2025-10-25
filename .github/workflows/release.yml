@@ -22,7 +22,7 @@ jobs:
     steps:
       # 1. Checkout del codice dal repository
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Aggiornato a v4
 
       # 2. Setup di PHP
       - name: Setup PHP
@@ -33,29 +33,30 @@ jobs:
           coverage: none # Non serve la code coverage
           tools: composer # Installa Composer
 
-      # 3. Installa TUTTE le dipendenze (incluse quelle di sviluppo per scssphp)
-      - name: Install all Composer dependencies
+      # 3. Installa TUTTE le dipendenze (incluse dev per compilare SCSS)
+      - name: Install All Composer dependencies (including dev)
         run: composer install --no-interaction --prefer-dist
 
       # 4. Compila SCSS in CSS
       - name: Compile SCSS to CSS
-        run: php bin/compile-scss.php # Chiamiamo lo script direttamente
+        run: php bin/compile-scss.php # Esegue il nostro script di compilazione PHP
 
-      # 5. Pulisce le dipendenze per la produzione (Prune dev dependencies)
-      - name: Prune dev dependencies for production
+      # 5. Rimuovi le dipendenze di sviluppo
+      - name: Remove dev dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
       # 6. Crea l'archivio ZIP del plugin
       - name: Create plugin archive
         run: |
           # Nome della cartella del plugin (lo slug)
-          PLUGIN_SLUG="cri-corsi" # <-- CORRETTO
+          PLUGIN_SLUG="cri-corsi"
           # Nome del file ZIP basato sul tag Git
           ZIP_FILE="${PLUGIN_SLUG}-$(echo ${GITHUB_REF#refs/tags/}).zip"
           # Crea la directory di build temporanea
           mkdir -p build/${PLUGIN_SLUG}
           # Copia i file necessari nell'archivio (escludendo file/cartelle di sviluppo)
-          rsync -rc --exclude='.git/' --exclude='.github/' --exclude='.editorconfig' --exclude='bin/' --exclude='assets/scss/' --exclude='composer.json' --exclude='composer.lock' --exclude='refactor_roadmap.md' --exclude='README.md' --exclude='contributing.md' --exclude='renovate.json' ./ build/${PLUGIN_SLUG}/
+          # AGGIUNTO: --exclude='wp-content/'
+          rsync -rc --exclude='.git/' --exclude='.github/' --exclude='.editorconfig' --exclude='bin/' --exclude='assets/scss/' --exclude='composer.json' --exclude='composer.lock' --exclude='README.md' --exclude='REFACTOR_ROADMAP.md' --exclude='contributing.md' --exclude='build/' --exclude='wp-content/' ./ build/${PLUGIN_SLUG}/
           # Entra nella cartella di build e crea lo zip
           cd build
           zip -r ../${ZIP_FILE} ./${PLUGIN_SLUG}
@@ -66,8 +67,14 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} # Aggiunto esplicitamente per robustezza
-          # Il token GitHub viene fornito automaticamente dall'action
+          token: ${{ secrets.GITHUB_TOKEN }} # Specificato esplicitamente
           files: ${{ env.ZIP_FILE_NAME }} # Il file ZIP da allegare
-          generate_release_notes: true # Genera automaticamente le note di rilascio
+          # Opzionale: puoi aggiungere una descrizione o generare note di rilascio
+          # body: |
+          #   Release della versione ${{ github.ref_name }} del plugin CRI Corsi.
+          # generate_release_notes: true
+
+      # 8. Pulisci la cartella di build
+      - name: Clean up build directory
+        run: rm -rf build/
 
