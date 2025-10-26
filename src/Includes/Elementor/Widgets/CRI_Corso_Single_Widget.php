@@ -10,7 +10,7 @@ namespace CRICorsi\Includes\Elementor\Widgets;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
-use Elementor\Group_Control_Box_Shadow;
+use Elementor\Group_Control_Box_Shadow; // <-- Importato Box Shadow
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 use Elementor\Utils; // Per background image
 use CRICorsi\Includes\Form_Handler;
@@ -106,7 +106,7 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                 ]
         );
         $this->add_control(
-                'image_display', // **NUOVO**
+                'image_display',
                 [
                         'label' => esc_html__( 'Visualizza Come', 'cri-corsi' ),
                         'type' => Controls_Manager::SELECT,
@@ -119,7 +119,7 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                 ]
         );
         $this->add_responsive_control(
-                'image_bg_height', // **NUOVO**
+                'image_bg_height',
                 [
                         'label' => esc_html__( 'Altezza Sfondo', 'cri-corsi' ),
                         'type' => Controls_Manager::SLIDER,
@@ -130,7 +130,7 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                         ],
                         'default' => [ 'unit' => 'px', 'size' => 300 ],
                         'selectors' => [
-                                '{{WRAPPER}}.cri-image-display-background .cri-corso-single-image-bg' => 'height: {{SIZE}}{{UNIT}};',
+                                '{{WRAPPER}}.cri-image-display-background .cri-corso-single-image-bg' => 'height: {{SIZE}}{{UNIT}}; background-size: cover; background-position: center;', // Aggiunto background-size/position
                         ],
                         'condition' => [
                                 'image_display' => 'background',
@@ -148,13 +148,10 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                                 '%' => [ 'min' => 0, 'max' => 50 ],
                         ],
                         'selectors' => [
-                            // Selettore per immagine standard
                                 '{{WRAPPER}}.cri-image-display-default .elementor .cri-corso-single-image img' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
                                 '{{WRAPPER}}.cri-image-display-default .cri-corso-single-image img' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
-                            // Selettore per contenitore sfondo
                                 '{{WRAPPER}}.cri-image-display-background .cri-corso-single-image-bg' => 'border-radius: {{SIZE}}{{UNIT}};',
                         ],
-                    // Nota: `!important` è meno necessario quando lo stile è controllato da Elementor
                 ]
         );
 
@@ -168,14 +165,39 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                 ]
         );
         $this->add_control(
-                'meta_position', // **NUOVO**
+                'meta_position',
                 [
                         'label' => esc_html__( 'Posizione Meta', 'cri-corsi' ),
                         'type' => Controls_Manager::SWITCHER,
                         'label_on' => esc_html__( 'Dopo Img', 'cri-corsi' ),
                         'label_off' => esc_html__( 'Prima Img', 'cri-corsi' ),
                         'return_value' => 'after_image',
-                        'default' => 'after_image', // Default: meta dopo l'immagine
+                        'default' => 'after_image',
+                ]
+        );
+        $this->add_responsive_control(
+                'meta_alignment',
+                [
+                        'label' => esc_html__( 'Allineamento Meta', 'cri-corsi' ),
+                        'type' => Controls_Manager::CHOOSE,
+                        'options' => [
+                                'flex-start' => [
+                                        'title' => esc_html__( 'Sinistra', 'cri-corsi' ),
+                                        'icon' => 'eicon-text-align-left',
+                                ],
+                                'center' => [
+                                        'title' => esc_html__( 'Centro', 'cri-corsi' ),
+                                        'icon' => 'eicon-text-align-center',
+                                ],
+                                'flex-end' => [
+                                        'title' => esc_html__( 'Destra', 'cri-corsi' ),
+                                        'icon' => 'eicon-text-align-right',
+                                ],
+                        ],
+                        'default' => 'flex-start',
+                        'selectors' => [
+                                '{{WRAPPER}} .cri-corso-single-meta' => 'justify-content: {{VALUE}};',
+                        ],
                 ]
         );
         $this->add_group_control(
@@ -224,7 +246,25 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                         'selector' => '{{WRAPPER}} .cri-content-box',
                 ]
         );
-        // Aggiungere qui controlli per padding, bordo, sfondo dei box se necessario
+        $this->add_responsive_control( // **NUOVO**
+                'content_box_gap', // **NUOVO**
+                [
+                        'label' => esc_html__( 'Spazio tra Box', 'cri-corsi' ),
+                        'type' => Controls_Manager::SLIDER,
+                        'size_units' => [ 'px', 'em', 'rem' ],
+                        'range' => [
+                                'px' => [ 'min' => 0, 'max' => 100 ],
+                                'em' => [ 'min' => 0, 'max' => 5, 'step' => 0.1 ],
+                                'rem' => [ 'min' => 0, 'max' => 5, 'step' => 0.1 ],
+                        ],
+                        'default' => [ 'unit' => 'px', 'size' => 30 ], // Valore di default
+                        'selectors' => [
+                            // Applica un margine inferiore a tutti i box eccetto l'ultimo
+                                '{{WRAPPER}} .cri-content-box:not(:last-child)' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+                        ],
+                ]
+        );
+
 
         // --- Stile Titoli Sezioni (Mappa, Form) ---
         $this->add_control(
@@ -244,7 +284,7 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                 ]
         );
         $this->add_control(
-                'heading_map_color', // **NUOVO**
+                'heading_map_color',
                 [
                         'label'     => esc_html__( 'Colore Titolo Mappa', 'cri-corsi' ),
                         'type'      => Controls_Manager::COLOR,
@@ -254,13 +294,88 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                 ]
         );
         $this->add_control(
-                'heading_form_color', // **NUOVO**
+                'heading_form_color',
                 [
                         'label'     => esc_html__( 'Colore Titolo Form', 'cri-corsi' ),
                         'type'      => Controls_Manager::COLOR,
                         'selectors' => [
                                 '{{WRAPPER}} .cri-corso-booking-form h2' => 'color: {{VALUE}}',
                         ],
+                ]
+        );
+
+        // --- Stile Pulsante Iscrizione ---
+        $this->add_control(
+                'heading_button_style',
+                [
+                        'label' => esc_html__( 'Pulsante Iscrizione', 'cri-corsi' ),
+                        'type' => Controls_Manager::HEADING,
+                        'separator' => 'before',
+                ]
+        );
+        $this->start_controls_tabs( 'button_style_tabs' );
+        $this->start_controls_tab(
+                'button_style_normal',
+                [ 'label' => esc_html__( 'Normale', 'cri-corsi' ) ]
+        );
+        $this->add_control(
+                'button_bg_color',
+                [
+                        'label' => esc_html__( 'Colore Sfondo', 'cri-corsi' ),
+                        'type' => Controls_Manager::COLOR,
+                        'selectors' => [
+                                '{{WRAPPER}} .cri-corso-button' => 'background-color: {{VALUE}};',
+                        ],
+                ]
+        );
+        $this->add_control(
+                'button_text_color',
+                [
+                        'label' => esc_html__( 'Colore Testo', 'cri-corsi' ),
+                        'type' => Controls_Manager::COLOR,
+                        'selectors' => [
+                                '{{WRAPPER}} .cri-corso-button' => 'color: {{VALUE}};',
+                        ],
+                ]
+        );
+        $this->end_controls_tab();
+        $this->start_controls_tab(
+                'button_style_hover',
+                [ 'label' => esc_html__( 'Hover', 'cri-corsi' ) ]
+        );
+        $this->add_control(
+                'button_bg_color_hover',
+                [
+                        'label' => esc_html__( 'Colore Sfondo', 'cri-corsi' ),
+                        'type' => Controls_Manager::COLOR,
+                        'selectors' => [
+                                '{{WRAPPER}} .cri-corso-button:hover, {{WRAPPER}} .cri-corso-button:focus' => 'background-color: {{VALUE}};',
+                        ],
+                ]
+        );
+        $this->add_control(
+                'button_text_color_hover',
+                [
+                        'label' => esc_html__( 'Colore Testo', 'cri-corsi' ),
+                        'type' => Controls_Manager::COLOR,
+                        'selectors' => [
+                                '{{WRAPPER}} .cri-corso-button:hover, {{WRAPPER}} .cri-corso-button:focus' => 'color: {{VALUE}};',
+                        ],
+                ]
+        );
+        $this->end_controls_tab();
+        $this->end_controls_tabs();
+        $this->add_control(
+                'button_border_radius',
+                [
+                        'label' => esc_html__( 'Raggio Bordo Pulsante', 'cri-corsi' ),
+                        'type' => Controls_Manager::SLIDER,
+                        'size_units' => [ 'px', '%' ],
+                        'range' => [ 'px' => [ 'min' => 0, 'max' => 50 ] ],
+                        'selectors' => [
+                                '{{WRAPPER}} .cri-corso-button' => 'border-radius: {{SIZE}}{{UNIT}};',
+                        ],
+                        'separator' => 'before',
                 ]
         );
 
@@ -291,7 +406,7 @@ class CRI_Corso_Single_Widget extends Widget_Base {
         $date_orari = get_post_meta( $post_id, '_cri_course_date_orari', true );
         $cosa_imparerai = get_post_meta( $post_id, '_cri_course_learn', true ) ?: '';
         $a_chi_rivolto = get_post_meta( $post_id, '_cri_course_target', true ) ?: '';
-        $featured_img_url = get_the_post_thumbnail_url( $post_id, 'large' ); // URL per sfondo
+        $featured_img_url = get_the_post_thumbnail_url( $post_id, 'large' );
 
         $is_pagamento = ! empty( $prezzo ) && ! empty( $prodotto_id ) && class_exists( 'WooCommerce' );
         $is_gratuito = ! $is_pagamento;
@@ -324,13 +439,11 @@ class CRI_Corso_Single_Widget extends Widget_Base {
         $render_image = function() use ($settings, $featured_img_url) {
             if ( has_post_thumbnail() ) {
                 if ( $settings['image_display'] === 'background' ) {
-                    // **NUOVO**: Immagine come sfondo
                     printf(
                             '<div class="cri-corso-single-image-bg" style="background-image: url(%s);"></div>',
                             esc_url( $featured_img_url )
                     );
                 } else {
-                    // Immagine standard
                     echo '<div class="cri-corso-single-image">';
                     the_post_thumbnail( 'large' );
                     echo '</div>';
@@ -346,13 +459,12 @@ class CRI_Corso_Single_Widget extends Widget_Base {
             </header>
 
             <?php
-            // **NUOVO**: Logica Posizione Meta/Immagine
             if ( $settings['meta_position'] !== 'after_image' ) {
-                $render_meta(); // Mostra meta prima
+                $render_meta();
             }
-            $render_image(); // Mostra immagine
+            $render_image();
             if ( $settings['meta_position'] === 'after_image' ) {
-                $render_meta(); // Mostra meta dopo
+                $render_meta();
             }
             ?>
 
