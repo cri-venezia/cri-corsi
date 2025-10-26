@@ -1,0 +1,24 @@
+{
+  "name": "cri-corsi",
+  "version": "1.1.0",
+  "description": "Compilazione assets per il plugin CRI Corsi",
+  "main": "gulpfile.js",
+  "scripts": {
+    "build:css": "gulp sass",
+    "watch:css": "gulp watch"
+  },
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "scss",
+    "gulp"
+  ],
+  "author": "Luca <luca.forzutti@veneto.cri.it>",
+  "license": "GPL-2.0-or-later",
+  "devDependencies": {
+    "gulp": "^5.0.0",
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.77.4"
+  }
+}
+
