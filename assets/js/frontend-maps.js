@@ -1,70 +1,76 @@
-document.addEventListener('DOMContentLoaded', function() {
+// Aspetta che l'intera pagina (incluse immagini e CSS) sia caricata
+window.addEventListener('load', function() {
 
-    // Controlla se L (Leaflet) è definito
-    if (typeof L === 'undefined') {
-        console.warn('Leaflet non è stato caricato. Impossibile inizializzare le mappe.');
-        return;
-    }
+    // Seleziona tutti gli elementi mappa presenti nella pagina
+    const mapElements = document.querySelectorAll('.cri-corso-map');
 
-    // Seleziona tutte le mappe nel DOM
-    const maps = document.querySelectorAll('.cri-corso-map');
-
-    if (maps.length === 0) {
-        return;
-    }
-
-    maps.forEach(mapElement => {
-        const mapId = mapElement.id;
+    mapElements.forEach(mapElement => {
         const address = mapElement.dataset.address;
+        const mapId = mapElement.id;
 
-        if (!mapId || !address) {
-            console.warn('Elemento mappa senza ID o data-address.');
-            return;
+        // Coordinate di default (Sede CRI Venezia - approssimative) se l'indirizzo manca o la geocodifica fallisce
+        const defaultCoords = [45.4381, 12.2882]; // Coordinate per Via Porto di Cavergnago, 38/B
+        const defaultAddress = 'Via Porto di Cavergnago, 38/B, 30173 Venezia VE';
+
+        // Controlla se l'oggetto L (Leaflet) è disponibile
+        if (typeof L === 'undefined') {
+            console.error('Libreria Leaflet non caricata.');
+            mapElement.innerHTML = '<p style="color: red;">Errore: Libreria mappa non caricata.</p>';
+            return; // Interrompi l'esecuzione per questo elemento
         }
 
-        // Controlla se la mappa è già stata inizializzata
-        if (mapElement && !mapElement._leaflet_id) {
+        let map; // Dichiara la variabile mappa qui
 
-            // Default: coordinate della sede (Via Porto di Cavergnago)
-            let defaultCoords = [45.4854, 12.2354]; // Sede CRI Venezia
-            let defaultZoom = 13;
-            let defaultAddress = 'Via Porto di Cavergnago, 38/B';
+        // Funzione per inizializzare o aggiornare la mappa
+        const initializeMap = (coords, popupText) => {
+            try {
+                if (!map) {
+                    map = L.map(mapId).setView(coords, 15); // Inizializza solo la prima volta
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | CRI Venezia'
+                    }).addTo(map);
+                } else {
+                    map.setView(coords, 16); // Altrimenti centra solo la vista
+                }
+                L.marker(coords).addTo(map)
+                    .bindPopup(popupText)
+                    .openPopup();
 
-            var map = L.map(mapId).setView(defaultCoords, defaultZoom);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; CRI Venezia'
-            }).addTo(map);
-
-            // Geocodifica l'indirizzo (usando Nominatim)
-            fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(address) + '&format=json&limit=1')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Errore di rete nella richiesta a Nominatim');
+                // Forza Leaflet a ricalcolare le dimensioni dopo un ritardo maggiore
+                setTimeout(() => {
+                    if (map) {
+                        map.invalidateSize();
+                        console.log("Leaflet map invalidated size for:", mapId); // Log di debug
                     }
-                    return response.json();
-                })
+                }, 250); // Ritardo aumentato a 250ms
+            } catch (e) {
+                console.error("Errore durante l'inizializzazione della mappa Leaflet:", e);
+                mapElement.innerHTML = '<p style="color: red;">Errore durante l\'inizializzazione della mappa.</p>';
+            }
+        };
+
+        if (address && mapId) {
+            // Prova a ottenere le coordinate dall'indirizzo
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        var lat = data[0].lat;
-                        var lon = data[0].lon;
-                        map.setView([lat, lon], 15);
-                        L.marker([lat, lon]).addTo(map)
-                            .bindPopup(address);
+                        const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+                        initializeMap(coords, `<b>${address}</b>`);
                     } else {
-                        console.warn('Indirizzo non trovato su Nominatim: ' + address);
-                        // Opzionale: mostra un marker sulla sede di Venezia se l'indirizzo non è trovato
-                        L.marker(defaultCoords).addTo(map)
-                            .bindPopup(defaultAddress + '.<br>Indirizzo non trovato.');
+                        console.warn(`Geocodifica fallita per: ${address}. Uso coordinate di default.`);
+                        initializeMap(defaultCoords, `<b>Sede Principale (Indirizzo non trovato):</b><br>${defaultAddress}`);
                     }
                 })
                 .catch(error => {
                     console.error('Errore durante la geocodifica:', error);
-                    // Mostra un marker sulla sede di Venezia in caso di errore fetch
-                    L.marker(defaultCoords).addTo(map)
-                        .bindPopup(defaultAddress + '.<br>Errore di geocodifica.');
+                    initializeMap(defaultCoords, `<b>Sede Principale (Errore geocodifica):</b><br>${defaultAddress}`);
                 });
+
+        } else if (mapId) {
+            console.warn('Indirizzo non fornito per:', mapId + ". Uso coordinate di default.");
+            initializeMap(defaultCoords, `<b>Sede Principale:</b><br>${defaultAddress}`);
         }
     });
-});
 
+}); // Fine window.onload
