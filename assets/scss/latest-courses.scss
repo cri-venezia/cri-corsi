@@ -1,0 +1,102 @@
+@use "sass:color"; // Importa il modulo colore di Sass
+
+// Variabili Colore (potresti volerle importare da un file parziale comune)
+$cri-red: #CC0000;
+$cri-red-dark: color.adjust($cri-red, $lightness: -10%);
+$text-color: #333;
+$border-color: #ddd;
+$background-light: #f9f9f9;
+$success-color: #28a745;
+$box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+
+// Stili specifici per il widget "Ultimi Corsi"
+.elementor-widget-cri-ultimi-corsi {
+
+  .cri-latest-courses-list {
+    display: flex; // Usa Flexbox per layout a card
+    flex-wrap: wrap; // Permette alle card di andare a capo
+    gap: 20px; // Spazio tra le card
+    list-style: none; // Rimuove eventuali stili di lista
+    padding: 0;
+    margin: 0; // Resetta margini di default
+  }
+
+  .cri-latest-course-item {
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: $box-shadow;
+    transition: box-shadow 0.3s ease;
+    display: flex; // Contenuto item in flex
+    flex-direction: column; // Impila immagine e contenuto
+    // Calcola larghezza per 3 colonne con gap (considerando il gap)
+    flex: 0 1 calc(33.333% - (20px * 2 / 3)); // 3 colonne - gap
+
+    // Adattamento per schermi più piccoli (es. 2 colonne sotto i 768px)
+    @media (max-width: 768px) {
+      flex: 0 1 calc(50% - (20px / 2)); // 2 colonne - gap
+    }
+    // Adattamento per schermi ancora più piccoli (es. 1 colonna sotto i 480px)
+    @media (max-width: 480px) {
+      flex: 0 1 100%; // 1 colonna
+    }
+
+
+    &:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .cri-latest-course-image {
+      a {
+        display: block; // Assicura che il link occupi lo spazio
+      }
+      img {
+        display: block;
+        width: 100%;
+        height: 150px; // Altezza fissa per l'immagine thumbnail
+        object-fit: cover;
+        border-bottom: 1px solid $border-color; // Separatore leggero
+      }
+    }
+
+    .cri-latest-course-content {
+      padding: 10px 15px; // Padding leggermente ridotto
+      flex-grow: 1; // Fa espandere il contenuto
+    }
+
+    .cri-latest-course-title {
+      font-size: 1.1em; // Dimensione titolo ridotta
+      margin-top: 0;
+      margin-bottom: 8px;
+
+      a {
+        text-decoration: none;
+        color: $text-color; // Sarà sovrascritto dal controllo Elementor se usato
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: $cri-red;
+        }
+      }
+    }
+
+    .cri-latest-course-price {
+      font-size: 1em; // Dimensione prezzo
+      font-weight: bold;
+      margin-bottom: 0; // Rimuove margine inferiore
+      color: $cri-red; // Sarà sovrascritto dal controllo Elementor se usato
+
+      &.gratuito {
+        color: $success-color; // Sarà sovrascritto dal controllo Elementor se usato
+      }
+    }
+
+    // Se aggiungi l'estratto:
+    // .cri-latest-course-excerpt {
+    //   font-size: 0.9em;
+    //   color: #666;
+    //   margin-top: 10px;
+    // }
+  }
+}

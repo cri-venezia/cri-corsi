@@ -155,17 +155,25 @@ final class CRI_Corsi {
 
 	/**
 	 * Carica gli script e gli stili per il frontend in modo condizionale.
+	 * **MODIFICATO**: Carica i CSS separati.
 	 */
 	public function enqueue_frontend_scripts(): void {
 
-		// Carica CSS per il widget griglia solo sul frontend se Elementor è attivo
-		// (Approccio semplice: si presume che se Elementor è attivo, il widget potrebbe essere usato)
-		// Alternativa più precisa richiederebbe di controllare il contenuto della pagina.
+		// Carica CSS per i widget Elementor solo sul frontend se Elementor è attivo
+		// (Approccio semplice: si presume che se Elementor è attivo, i widget potrebbero essere usati)
 		if ( ! is_admin() && did_action( 'elementor/loaded' ) ) {
+			// CSS per la Griglia
 			wp_enqueue_style(
 				'cri-corsi-grid-widget',
-				$this->plugin_url . 'assets/css/grid-widget.css', // Nuovo file CSS per la griglia
-				[], // Nessuna dipendenza specifica
+				$this->plugin_url . 'assets/css/grid-widget.css',
+				[],
+				self::VERSION
+			);
+			// CSS per Ultimi Corsi
+			wp_enqueue_style(
+				'cri-corsi-latest-courses',
+				$this->plugin_url . 'assets/css/latest-courses.css',
+				[],
 				self::VERSION
 			);
 		}
@@ -190,7 +198,7 @@ final class CRI_Corsi {
 			// Carica lo stile per la pagina singola (dipende da Leaflet CSS)
 			wp_enqueue_style(
 				'cri-corsi-single-course',
-				$this->plugin_url . 'assets/css/single-course.css', // Nuovo file CSS per il singolo
+				$this->plugin_url . 'assets/css/single-course.css',
 				[ 'cri-corsi-leaflet-css' ],
 				self::VERSION
 			);

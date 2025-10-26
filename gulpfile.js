@@ -1,33 +1,35 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/**
+ * Gulpfile per compilare SCSS in CSS.
+ */
+
+// Importa i moduli necessari
 const gulp = require('gulp');
-const gulpSass = require('gulp-sass');
-const dartSass = require('sass'); // Usa il compilatore Dart Sass
+const sass = require('gulp-sass')(require('sass')); // Usa Dart Sass
+const rename = require('gulp-rename'); // Per rinominare i file compilati se necessario
 
-// Imposta gulp-sass per usare Dart Sass
-const sassCompiler = gulpSass(dartSass);
-
-// Definisce i percorsi
+// Definisci i percorsi
 const paths = {
-    scss: {
-        src: 'assets/scss/**/*.scss', // Monitora tutti i file .scss
-        dest: 'assets/css/'
-    }
+    scss: 'assets/scss/**/*.scss', // Tutti i file .scss nella cartella scss e sottocartelle
+    css: 'assets/css/' // Cartella di destinazione per i CSS compilati
 };
 
-// Task per compilare SCSS in CSS
-function sassTask() {
-    return gulp.src(paths.scss.src)
-        .pipe(sassCompiler({ outputStyle: 'compressed' }).on('error', sassCompiler.logError)) // Compila in compresso e gestisce errori
-        .pipe(gulp.dest(paths.scss.dest)); // Salva in assets/css/
+// Task per compilare SCSS
+function compileSass() {
+    return gulp.src(paths.scss) // Prende tutti i file sorgente SCSS
+        .pipe(sass({ outputStyle: 'compressed' }) // Compila in CSS compresso
+            .on('error', sass.logError)) // Gestisce eventuali errori di compilazione
+        .pipe(gulp.dest(paths.css)); // Salva i file CSS nella cartella di destinazione
 }
 
 // Task per monitorare le modifiche ai file SCSS
-function watchTask() {
-    gulp.watch(paths.scss.src, sassTask); // Riesegue sassTask quando un file .scss cambia
+function watchSass() {
+    gulp.watch(paths.scss, compileSass); // Esegue compileSass ogni volta che un file SCSS cambia
 }
 
 // Esporta i task per poterli eseguire da riga di comando (es. npx gulp sass)
-exports.sass = sassTask;
-exports.watch = watchTask;
+exports.sass = compileSass;
+exports.watch = watchSass;
 
-// Task di default (eseguito con 'npx gulp') - compila soltanto
-exports.default = sassTask;
+// Task di default (eseguito con 'npx gulp') - Compila una volta
+exports.default = compileSass;
