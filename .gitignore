@@ -2,4 +2,5 @@
 vendor/
 wp-content/
 *.css
-src/Includes/Elementor/.DS_Store
+*.DS_Store
+node_modules/
