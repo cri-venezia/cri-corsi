@@ -154,22 +154,24 @@ final class CRI_Corsi {
 	}
 
 	/**
-	 * Carica gli script e gli stili per il frontend.
-	 * **MODIFICATO**: Ora carica Leaflet anche sulle pagine singole dei corsi.
+	 * Carica gli script e gli stili per il frontend in modo condizionale.
 	 */
 	public function enqueue_frontend_scripts(): void {
-		// Controlla se siamo in una pagina singola del nostro CPT 'cri_corso'
-		$load_assets = is_singular('cri_corso');
 
-		// Se non siamo su una singola, potremmo essere in una pagina con il widget.
-		// Un modo semplice (anche se non perfetto al 100%) è caricarli sempre sul frontend.
-		// Altrimenti, bisognerebbe analizzare il contenuto della pagina per vedere se il widget è presente.
-		// Per semplicità e robustezza, carichiamoli se è una singola O in generale (escludendo l'admin).
-		if ( ! is_admin() ) {
-			$load_assets = true; // Carica sempre sul frontend per coprire anche le pagine col widget
+		// Carica CSS per il widget griglia solo sul frontend se Elementor è attivo
+		// (Approccio semplice: si presume che se Elementor è attivo, il widget potrebbe essere usato)
+		// Alternativa più precisa richiederebbe di controllare il contenuto della pagina.
+		if ( ! is_admin() && did_action( 'elementor/loaded' ) ) {
+			wp_enqueue_style(
+				'cri-corsi-grid-widget',
+				$this->plugin_url . 'assets/css/grid-widget.css', // Nuovo file CSS per la griglia
+				[], // Nessuna dipendenza specifica
+				self::VERSION
+			);
 		}
 
-		if ( $load_assets ) {
+		// Carica CSS e JS per la pagina singola del corso e la mappa
+		if ( is_singular('cri_corso') ) {
 			// Registra e Accoda le librerie Leaflet
 			wp_enqueue_style(
 				'cri-corsi-leaflet-css',
@@ -185,10 +187,10 @@ final class CRI_Corsi {
 				true // Carica nel footer
 			);
 
-			// Carica lo stile principale del plugin (dipende da Leaflet CSS)
+			// Carica lo stile per la pagina singola (dipende da Leaflet CSS)
 			wp_enqueue_style(
-				'cri-corsi-frontend',
-				$this->plugin_url . 'assets/css/frontend.css',
+				'cri-corsi-single-course',
+				$this->plugin_url . 'assets/css/single-course.css', // Nuovo file CSS per il singolo
 				[ 'cri-corsi-leaflet-css' ],
 				self::VERSION
 			);
@@ -215,7 +217,7 @@ final class CRI_Corsi {
 	public function add_plugin_row_meta( array $plugin_meta, string $plugin_file ): array {
 		// Aggiungi il link solo per il nostro plugin
 		if ( plugin_basename( $this->plugin_file ) === $plugin_file ) {
-			$doc_link = '<a href="https://docs.crivenezia.it/cri-corsi/" target="_blank">' . esc_html__( 'Documentazione', 'cri-corsi' ) . '</a>';
+			$doc_link = '<a href="https://docs.crivenezia.it" target="_blank">' . esc_html__( 'Documentazione', 'cri-corsi' ) . '</a>';
 			$plugin_meta[] = $doc_link; // Aggiunge il link alla fine dell'array
 		}
 		return $plugin_meta;

@@ -1,0 +1,144 @@
+@use "sass:color"; // Importa il modulo colore di Sass
+
+// Variabili Colore (potrebbero essere in un file _variables.scss separato in futuro)
+$cri-red: #CC0000;
+$cri-red-dark: color.adjust($cri-red, $lightness: -10%);
+$text-color: #333;
+$border-color: #ddd;
+$background-light: #f9f9f9;
+$success-color: #28a745; // Verde per 'Gratuito'
+$box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); // Ombra leggera per i box
+
+// --- Stili Specifici per la Pagina Singola del Corso ---
+.cri-corso-single-page {
+
+  // Box generico per contenuto
+  .cri-content-box {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    box-shadow: $box-shadow !important;
+    margin-bottom: 30px;
+  }
+
+  .cri-corso-single-image {
+    margin-bottom: 25px;
+  }
+
+  // Applica stili a .elementor img solo dentro la pagina singola
+  .elementor img {
+    border-radius: 10px !important;
+    box-shadow: $box-shadow !important;
+    // Nota: width/height/display sono probabilmente già gestiti da Elementor/Tema
+    max-width: 100%; // Assicura che l'immagine non strabordi
+    height: auto; // Mantiene le proporzioni
+    display: block; // Rimuove spazio extra sotto l'immagine
+  }
+
+  .cri-corso-single-meta {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid $border-color;
+    font-size: 1.1em;
+    color: #555;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    span {
+      display: inline-block;
+    }
+    strong {
+      color: $text-color;
+    }
+
+    .cri-corso-prezzo.gratuito {
+      color: $success-color;
+      font-weight: bold;
+    }
+  }
+
+  .entry-content {
+    @extend .cri-content-box; // Eredita stile box
+  }
+
+  .cri-corso-tabs {
+    @extend .cri-content-box; // Eredita stile box
+    padding: 0;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    overflow: hidden;
+
+    .cri-tabs-nav {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      background-color: $background-light;
+      border-bottom: 1px solid $border-color;
+
+      li {
+        margin: 0;
+        padding: 0;
+
+        a {
+          display: block;
+          padding: 12px 18px;
+          text-decoration: none;
+          color: #555;
+          border-right: 1px solid $border-color;
+          font-weight: bold;
+          transition: background-color 0.2s ease, color 0.2s ease;
+
+          &.active {
+            background-color: #fff;
+            color: $text-color;
+            border-bottom: 1px solid #fff;
+            margin-bottom: -1px;
+          }
+          &:hover:not(.active) {
+            background-color: color.adjust($background-light, $lightness: -5%);
+          }
+        }
+
+        &:last-child a {
+          border-right: none;
+        }
+      }
+    }
+
+    .cri-tabs-content {
+      padding: 25px;
+      background-color: #fff;
+
+      .cri-tab-pane {
+        display: none;
+        &.active {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .cri-corso-single-map-container {
+    @extend .cri-content-box; // Eredita stile box
+    margin-top: 30px;
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+      padding-bottom: 10px;
+      border-bottom: 1px solid $border-color;
+    }
+
+    .cri-corso-map {
+      min-height: 350px !important;
+      height: 350px !important;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      margin-top: 15px;
+    }
+  }
+} // Fine .cri-corso-single-page
