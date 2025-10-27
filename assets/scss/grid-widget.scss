@@ -26,10 +26,16 @@ $box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
     box-shadow: $box-shadow;
-    transition: box-shadow 0.3s ease;
+    // **MODIFICATO**: Aggiunta transizione per transform
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    position: relative; // Necessario per alcuni effetti hover/z-index
 
+
+    // **NUOVO**: Effetto Hover
     &:hover {
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); // Ombra più pronunciata
+      transform: translateY(-5px); // Solleva leggermente la card
+      z-index: 1; // Porta la card in primo piano se si sovrappongono
     }
 
     .cri-corso-image {
@@ -52,7 +58,14 @@ $box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
       font-size: 1.4em;
       margin-top: 0;
       margin-bottom: 10px;
-      color: $text-color;
+      a { // Applica stili al link
+        color: $text-color;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        &:hover {
+          color: $cri-red; // Cambia colore al passaggio del mouse
+        }
+      }
     }
 
     .cri-corso-prezzo {
@@ -73,7 +86,7 @@ $box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
       flex-grow: 1;
     }
 
-    // Form nel Widget
+    // Form nel Widget (attualmente rimosso dal PHP, ma lo stile rimane per sicurezza)
     .cri-corso-booking-form {
       margin-top: auto;
       padding-top: 15px;
