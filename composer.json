@@ -16,7 +16,7 @@
   },
   "require": {
     "yahnis-elsts/plugin-update-checker": "^5.0",
-    "scssphp/scssphp": "^1.11"
+    "scssphp/scssphp": "^2.0"
   },
   "require-dev": {
     "wpackagist-plugin/elementor": "*",
