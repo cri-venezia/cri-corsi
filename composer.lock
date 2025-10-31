@@ -304,15 +304,15 @@
         },
         {
             "name": "wpackagist-plugin/woocommerce",
-            "version": "10.3.0",
+            "version": "10.3.4",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/woocommerce/",
-                "reference": "tags/10.3.0"
+                "reference": "tags/10.3.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/woocommerce.10.3.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/woocommerce.10.3.4.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
