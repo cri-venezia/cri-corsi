@@ -39,7 +39,7 @@ use CRICorsi\Includes\Form_Handler;
 use CRICorsi\Includes\Admin_Columns;
 use CRICorsi\Includes\Admin\Teacher_Panel;
 use CRICorsi\Includes\Admin\Admin_Footer;
-use CRICorsi\Includes\Admin\Admin_Utilities; // <-- NUOVO
+use CRICorsi\Includes\Admin\Admin_Utilities; // <-- Importato
 use CRICorsi\Includes\Plugin_Updater;
 use CRICorsi\Includes\Elementor\Elementor_Widgets;
 use CRICorsi\Includes\User_Roles;
@@ -122,12 +122,6 @@ final class CRI_Corsi {
 
         // Hook per aggiungere link ai meta dati del plugin
         add_filter( 'plugin_row_meta', [ $this, 'add_plugin_row_meta' ], 10, 2 );
-
-        // **RIMOSSI**: Hook per "Svuota Carrello" (spostati in Admin_Utilities)
-        // if ( is_admin() ) {
-        //    add_action( 'admin_bar_menu', [ $this, 'add_empty_cart_admin_bar_link' ], 100 );
-        //    add_action( 'admin_init', [ $this, 'handle_empty_cart_action' ] );
-        // }
     }
 
     /**
@@ -138,22 +132,24 @@ final class CRI_Corsi {
         new Post_Types();
         new Meta_Boxes();
 
-        // Classi testate e sicure
+        // Classi che si agganciano al frontend e/o admin-post
         new Form_Handler();
         new Elementor_Widgets(); // Registra widget
-        
+
         // Classi che funzionano solo nell'area admin
         if ( is_admin() ) {
             new Admin_Columns();
             new Teacher_Panel();
             new Admin_Footer();
             new User_Roles();
-            new Admin_Utilities(); // <-- NUOVO
         }
 
         // Carica l'integrazione WC solo se WooCommerce è attivo
         if ( class_exists( 'WooCommerce' ) ) {
             new WooCommerce_Integration();
+            // **SPOSTATO**: Admin_Utilities deve essere caricato anche sul frontend (per la pagina carrello)
+            // ma solo se WC è attivo.
+            new Admin_Utilities(); 
         }
 
         // Classe che causava il loop (lasciamo commentata per ora)
@@ -247,10 +243,6 @@ final class CRI_Corsi {
         return $plugin_meta;
     }
 
-    // **RIMOSSO**: Metodo add_empty_cart_admin_bar_link (spostato)
-    
-    // **RIMOSSO**: Metodo handle_empty_cart_action (spostato)
-
 
     /**
      * Getter per la versione del plugin.
@@ -290,4 +282,3 @@ CRI_Corsi::instance();
 
 // Registra l'hook di attivazione per creare il ruolo utente.
 register_activation_hook( __FILE__, [ '\CRICorsi\Includes\User_Roles', 'add_custom_role' ] );
-
