@@ -36,8 +36,18 @@ class Admin_Utilities {
      * @param \WP_Admin_Bar $wp_admin_bar Oggetto WP_Admin_Bar.
      */
     public function add_empty_cart_admin_bar_link( \WP_Admin_Bar $wp_admin_bar ): void {
+        
+        // **CORREZIONE**: Forza l'inizializzazione della sessione e del carrello nell'area admin
+        if ( function_exists('WC') && WC()->session && ! WC()->session->has_session() ) {
+            WC()->session->set_customer_session_cookie( true );
+        }
+        if ( function_exists('wc_load_cart') && is_null( WC()->cart ) ) {
+            wc_load_cart();
+        }
+
         // Mostra solo se l'utente è admin e il carrello esiste
-        if ( ! current_user_can('manage_options') || ( function_exists('WC') && ! WC()->cart ) ) {
+        // (Modificato il controllo: ora verifichiamo che WC() e WC()->cart esistano)
+        if ( ! current_user_can('manage_options') || ! function_exists('WC') || ! WC()->cart ) {
             return;
         }
 
@@ -69,6 +79,15 @@ class Admin_Utilities {
              wp_verify_nonce($_GET['_cri_nonce'], 'cri_empty_cart_nonce') && 
              current_user_can('manage_options') 
         ) {
+            
+            // **CORREZIONE**: Assicura che il carrello sia inizializzato prima di svuotarlo
+            if ( function_exists('WC') && WC()->session && ! WC()->session->has_session() ) {
+                 WC()->session->set_customer_session_cookie( true );
+            }
+             if ( function_exists('wc_load_cart') && is_null( WC()->cart ) ) {
+                 wc_load_cart();
+             }
+
             // Se tutto è valido, svuota il carrello
             if ( function_exists('WC') && WC()->cart ) {
                 WC()->cart->empty_cart();
@@ -80,3 +99,4 @@ class Admin_Utilities {
         }
     }
 }
+
