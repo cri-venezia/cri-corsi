@@ -1,6 +1,6 @@
 <?php
 /**
- * Aggiunge funzionalità di utility per l'area admin, come il link "Svuota Carrello".
+ * Gestisce le azioni di utility admin, come lo svuotamento del carrello.
  *
  * @package CRI_Corsi
  */
@@ -13,6 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Classe Admin_Utilities
+ * Gestisce l'azione POST per svuotare il carrello.
+ * La visualizzazione del pulsante è delegata a un widget Elementor.
  */
 class Admin_Utilities {
 
@@ -25,43 +27,19 @@ class Admin_Utilities {
             return;
         }
 
-        // Hook per aggiungere il pulsante "Svuota Carrello" nella pagina del carrello
-        add_action( 'woocommerce_after_cart_totals', [ $this, 'display_empty_cart_button' ] );
+        // **RIMOSSI**: Hook per visualizzare il pulsante
+        // add_action( 'woocommerce_after_cart_totals', [ $this, 'display_empty_cart_button' ] );
+        // add_action( 'woocommerce_before_checkout_form', [ $this, 'display_empty_cart_button' ], 10 );
         
-        // **NUOVO**: Hook per aggiungere il pulsante anche nella pagina di checkout
-        add_action( 'woocommerce_before_checkout_form', [ $this, 'display_empty_cart_button' ], 10 );
-        
-        // Hook per gestire la richiesta POST di svuotamento carrello
+        // **MANTENUTO**: Hook per gestire la richiesta POST di svuotamento carrello
         add_action( 'wp_loaded', [ $this, 'handle_empty_cart_post' ] );
     }
 
     /**
-     * Mostra un pulsante "Svuota Carrello" nella pagina del carrello o checkout, solo per gli admin.
-     * Agganciato a 'woocommerce_after_cart_totals' e 'woocommerce_before_checkout_form'.
+     * **RIMOSSO**: La funzione display_empty_cart_button() è stata spostata
+     * nella logica di rendering del nuovo widget CRI_Svuota_Carrello_Widget.
      */
-    public function display_empty_cart_button(): void {
-        
-        // **MODIFICATO**: Controlla se siamo in Carrello OPPURE in Checkout (ma non sulla pagina "Grazie")
-        if ( ( ! is_cart() && ( ! is_checkout() || is_order_received_page() ) ) || 
-             ! current_user_can('manage_options') || 
-             ! function_exists('WC') || ! WC()->cart || WC()->cart->is_empty() 
-        ) {
-            return;
-        }
-
-        // Stampa un modulo separato per l'azione
-        // Determina l'URL di action corretto (carrello o checkout)
-        $form_action_url = is_cart() ? wc_get_cart_url() : wc_get_checkout_url();
-        ?>
-        <form action="<?php echo esc_url( $form_action_url ); ?>" method="post" style="text-align: right; margin-top: 15px; margin-bottom: 15px; border: 1px dashed #CC0000; padding: 10px;">
-            <?php wp_nonce_field( 'cri_empty_cart_nonce', '_cri_nonce_empty_cart' ); ?>
-            <input type="hidden" name="cri_empty_cart_action" value="true" />
-            <button type="submit" class="button" name="empty_cart" value="<?php esc_attr_e( 'Svuota Carrello (Admin)', 'cri-corsi' ); ?>">
-                <?php esc_html_e( 'Svuota Carrello (Admin)', 'cri-corsi' ); ?>
-            </button>
-        </form>
-        <?php
-    }
+    // public function display_empty_cart_button(): void { ... }
 
     /**
      * Gestisce la richiesta POST per svuotare il carrello.
@@ -88,7 +66,7 @@ class Admin_Utilities {
                 WC()->cart->empty_cart();
             }
 
-            // **MODIFICATO**: Reindirizza alla pagina da cui è partita l'azione (Carrello o Checkout)
+            // Reindirizza alla pagina da cui è partita l'azione (Carrello o Checkout)
             $redirect_url = wc_get_cart_url(); // Default
             if ( wp_get_referer() ) {
                 $referer = wp_unslash( $_SERVER['HTTP_REFERER'] ); // Recupera l'URL precedente
