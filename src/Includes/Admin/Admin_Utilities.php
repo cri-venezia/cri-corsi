@@ -20,67 +20,62 @@ class Admin_Utilities {
      * Costruttore. Aggancia le azioni.
      */
     public function __construct() {
-        // Aggiungi hook solo se siamo in admin e WooCommerce è attivo
-        if ( ! is_admin() || ! class_exists('WooCommerce') ) {
+        // Aggiungi hook solo se WooCommerce è attivo
+        if ( ! class_exists('WooCommerce') ) {
             return;
         }
 
-        add_action( 'admin_bar_menu', [ $this, 'add_empty_cart_admin_bar_link' ], 100 );
-        add_action( 'admin_init', [ $this, 'handle_empty_cart_action' ] );
-    }
-
-    /**
-     * Aggiunge un link "Svuota Carrello" alla barra di amministrazione.
-     * (Metodo spostato da CRI_Corsi)
-     *
-     * @param \WP_Admin_Bar $wp_admin_bar Oggetto WP_Admin_Bar.
-     */
-    public function add_empty_cart_admin_bar_link( \WP_Admin_Bar $wp_admin_bar ): void {
+        // Hook per aggiungere il pulsante "Svuota Carrello" nella pagina del carrello
+        add_action( 'woocommerce_after_cart_totals', [ $this, 'display_empty_cart_button' ] );
         
-        // **CORREZIONE**: Forza l'inizializzazione della sessione e del carrello nell'area admin
-        if ( function_exists('WC') && WC()->session && ! WC()->session->has_session() ) {
-            WC()->session->set_customer_session_cookie( true );
-        }
-        if ( function_exists('wc_load_cart') && is_null( WC()->cart ) ) {
-            wc_load_cart();
-        }
-
-        // Mostra solo se l'utente è admin e il carrello esiste
-        // (Modificato il controllo: ora verifichiamo che WC() e WC()->cart esistano)
-        if ( ! current_user_can('manage_options') || ! function_exists('WC') || ! WC()->cart ) {
-            return;
-        }
-
-        // Crea un URL sicuro con un nonce
-        $empty_cart_url = wp_nonce_url(
-            add_query_arg( 'cri_empty_cart', 'true', wp_get_referer() ?: admin_url() ), // Aggiunto referer
-            'cri_empty_cart_nonce',
-            '_cri_nonce'
-        );
-
-        $wp_admin_bar->add_node( [
-            'id'    => 'cri-empty-cart',
-            'title' => '<span class="ab-icon dashicons-trash" style="top: 2px;"></span>' . esc_html__( 'Svuota Carrello', 'cri-corsi' ),
-            'href'  => $empty_cart_url,
-            'meta'  => [
-                'title' => esc_html__( 'Svuota il carrello della tua sessione corrente (per test)', 'cri-corsi' ),
-            ],
-        ] );
+        // **NUOVO**: Hook per aggiungere il pulsante anche nella pagina di checkout
+        add_action( 'woocommerce_before_checkout_form', [ $this, 'display_empty_cart_button' ], 10 );
+        
+        // Hook per gestire la richiesta POST di svuotamento carrello
+        add_action( 'wp_loaded', [ $this, 'handle_empty_cart_post' ] );
     }
 
     /**
-     * Gestisce l'azione di svuotamento del carrello.
-     * (Metodo spostato da CRI_Corsi)
+     * Mostra un pulsante "Svuota Carrello" nella pagina del carrello o checkout, solo per gli admin.
+     * Agganciato a 'woocommerce_after_cart_totals' e 'woocommerce_before_checkout_form'.
      */
-    public function handle_empty_cart_action(): void {
+    public function display_empty_cart_button(): void {
+        
+        // **MODIFICATO**: Controlla se siamo in Carrello OPPURE in Checkout (ma non sulla pagina "Grazie")
+        if ( ( ! is_cart() && ( ! is_checkout() || is_order_received_page() ) ) || 
+             ! current_user_can('manage_options') || 
+             ! function_exists('WC') || ! WC()->cart || WC()->cart->is_empty() 
+        ) {
+            return;
+        }
+
+        // Stampa un modulo separato per l'azione
+        // Determina l'URL di action corretto (carrello o checkout)
+        $form_action_url = is_cart() ? wc_get_cart_url() : wc_get_checkout_url();
+        ?>
+        <form action="<?php echo esc_url( $form_action_url ); ?>" method="post" style="text-align: right; margin-top: 15px; margin-bottom: 15px; border: 1px dashed #CC0000; padding: 10px;">
+            <?php wp_nonce_field( 'cri_empty_cart_nonce', '_cri_nonce_empty_cart' ); ?>
+            <input type="hidden" name="cri_empty_cart_action" value="true" />
+            <button type="submit" class="button" name="empty_cart" value="<?php esc_attr_e( 'Svuota Carrello (Admin)', 'cri-corsi' ); ?>">
+                <?php esc_html_e( 'Svuota Carrello (Admin)', 'cri-corsi' ); ?>
+            </button>
+        </form>
+        <?php
+    }
+
+    /**
+     * Gestisce la richiesta POST per svuotare il carrello.
+     * Agganciato a 'wp_loaded'.
+     */
+    public function handle_empty_cart_post(): void {
         // Verifica se l'azione è stata chiamata, se il nonce è valido e se l'utente è admin
-        if ( isset($_GET['cri_empty_cart']) && 
-             isset($_GET['_cri_nonce']) && 
-             wp_verify_nonce($_GET['_cri_nonce'], 'cri_empty_cart_nonce') && 
+        if ( isset($_POST['cri_empty_cart_action']) && 
+             isset($_POST['_cri_nonce_empty_cart']) && 
+             wp_verify_nonce($_POST['_cri_nonce_empty_cart'], 'cri_empty_cart_nonce') && 
              current_user_can('manage_options') 
         ) {
             
-            // **CORREZIONE**: Assicura che il carrello sia inizializzato prima di svuotarlo
+            // Assicura che il carrello sia inizializzato
             if ( function_exists('WC') && WC()->session && ! WC()->session->has_session() ) {
                  WC()->session->set_customer_session_cookie( true );
             }
@@ -93,8 +88,17 @@ class Admin_Utilities {
                 WC()->cart->empty_cart();
             }
 
-            // Reindirizza alla stessa pagina rimuovendo i parametri dell'URL per evitare riesecuzioni
-            wp_safe_redirect( remove_query_arg( ['cri_empty_cart', '_cri_nonce'] ) );
+            // **MODIFICATO**: Reindirizza alla pagina da cui è partita l'azione (Carrello o Checkout)
+            $redirect_url = wc_get_cart_url(); // Default
+            if ( wp_get_referer() ) {
+                $referer = wp_unslash( $_SERVER['HTTP_REFERER'] ); // Recupera l'URL precedente
+                // Se il referer è la pagina checkout, torna lì. Altrimenti vai al carrello.
+                if ( strpos( $referer, wc_get_checkout_url() ) !== false ) {
+                    $redirect_url = wc_get_checkout_url();
+                }
+            }
+
+            wp_safe_redirect( $redirect_url );
             exit;
         }
     }
