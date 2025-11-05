@@ -10,7 +10,7 @@ namespace CRICorsi\Includes\Elementor\Widgets;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
-use Elementor\Group_Control_Box_Shadow; // <-- Importato Box Shadow
+use Elementor\Group_Control_Box_Shadow;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 use Elementor\Utils; // Per background image
 use CRICorsi\Includes\Form_Handler;
@@ -62,322 +62,347 @@ class CRI_Corso_Single_Widget extends Widget_Base {
      */
     protected function register_controls(): void {
         $this->start_controls_section(
-                'style_section',
-                [
-                        'label' => esc_html__( 'Stili', 'cri-corsi' ),
-                        'tab'   => Controls_Manager::TAB_STYLE,
-                ]
+            'style_section',
+            [
+                'label' => esc_html__( 'Stili', 'cri-corsi' ),
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
         );
 
         // --- Stile Titolo ---
         $this->add_control(
-                'heading_title_style',
-                [
-                        'label' => esc_html__( 'Titolo Principale', 'cri-corsi' ),
-                        'type' => Controls_Manager::HEADING,
-                ]
+            'heading_title_style',
+            [
+                'label' => esc_html__( 'Titolo Principale', 'cri-corsi' ),
+                'type' => Controls_Manager::HEADING,
+            ]
         );
         $this->add_group_control(
-                Group_Control_Typography::get_type(),
-                [
-                        'name'     => 'title_typography',
-                        'label'    => esc_html__( 'Tipografia', 'cri-corsi' ),
-                        'selector' => '{{WRAPPER}} .cri-corso-single-title',
-                ]
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'title_typography',
+                'label'    => esc_html__( 'Tipografia', 'cri-corsi' ),
+                'selector' => '{{WRAPPER}} .cri-corso-single-title',
+            ]
         );
         $this->add_control(
-                'title_color',
-                [
-                        'label'     => esc_html__( 'Colore', 'cri-corsi' ),
-                        'type'      => Controls_Manager::COLOR,
-                        'selectors' => [
-                                '{{WRAPPER}} .cri-corso-single-title' => 'color: {{VALUE}}',
-                        ],
-                ]
+            'title_color',
+            [
+                'label'     => esc_html__( 'Colore', 'cri-corsi' ),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .cri-corso-single-title' => 'color: {{VALUE}}',
+                ],
+            ]
         );
 
         // --- Stile Immagine ---
         $this->add_control(
-                'heading_image_style',
-                [
-                        'label' => esc_html__( 'Immagine in Evidenza', 'cri-corsi' ),
-                        'type' => Controls_Manager::HEADING,
-                        'separator' => 'before',
-                ]
+            'heading_image_style',
+            [
+                'label' => esc_html__( 'Immagine in Evidenza', 'cri-corsi' ),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
         );
         $this->add_control(
-                'image_display',
-                [
-                        'label' => esc_html__( 'Visualizza Come', 'cri-corsi' ),
-                        'type' => Controls_Manager::SELECT,
-                        'options' => [
-                                'default' => esc_html__( 'Immagine Standard', 'cri-corsi' ),
-                                'background' => esc_html__( 'Sfondo Contenitore', 'cri-corsi' ),
-                        ],
-                        'default' => 'default',
-                        'prefix_class' => 'cri-image-display-', // Aggiunge classe al wrapper del widget
-                ]
+            'image_display',
+            [
+                'label' => esc_html__( 'Visualizza Come', 'cri-corsi' ),
+                'type' => Controls_Manager::SELECT,
+                'options' => [
+                    'default' => esc_html__( 'Immagine Standard', 'cri-corsi' ),
+                    'background' => esc_html__( 'Sfondo Contenitore', 'cri-corsi' ),
+                ],
+                'default' => 'default',
+                'prefix_class' => 'cri-image-display-', // Aggiunge classe al wrapper del widget
+            ]
         );
         $this->add_responsive_control(
-                'image_bg_height',
-                [
-                        'label' => esc_html__( 'Altezza Sfondo', 'cri-corsi' ),
-                        'type' => Controls_Manager::SLIDER,
-                        'size_units' => [ 'px', 'vh' ],
-                        'range' => [
-                                'px' => [ 'min' => 100, 'max' => 1000 ],
-                                'vh' => [ 'min' => 10, 'max' => 100 ],
-                        ],
-                        'default' => [ 'unit' => 'px', 'size' => 300 ],
-                        'selectors' => [
-                                '{{WRAPPER}}.cri-image-display-background .cri-corso-single-image-bg' => 'height: {{SIZE}}{{UNIT}}; background-size: cover; background-position: center;', // Aggiunto background-size/position
-                        ],
-                        'condition' => [
-                                'image_display' => 'background',
-                        ],
-                ]
+            'image_bg_height',
+            [
+                'label' => esc_html__( 'Altezza Sfondo', 'cri-corsi' ),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', 'vh' ],
+                'range' => [
+                    'px' => [ 'min' => 100, 'max' => 1000 ],
+                    'vh' => [ 'min' => 10, 'max' => 100 ],
+                ],
+                'default' => [ 'unit' => 'px', 'size' => 300 ],
+                'selectors' => [
+                    '{{WRAPPER}}.cri-image-display-background .cri-corso-single-image-bg' => 'height: {{SIZE}}{{UNIT}}; background-size: cover; background-position: center;', // Aggiunto background-size/position
+                ],
+                'condition' => [
+                    'image_display' => 'background',
+                ],
+            ]
         );
         $this->add_control(
-                'image_border_radius',
-                [
-                        'label' => esc_html__( 'Raggio Bordo Immagine', 'cri-corsi' ),
-                        'type' => Controls_Manager::SLIDER,
-                        'size_units' => [ 'px', '%' ],
-                        'range' => [
-                                'px' => [ 'min' => 0, 'max' => 100 ],
-                                '%' => [ 'min' => 0, 'max' => 50 ],
-                        ],
-                        'selectors' => [
-                                '{{WRAPPER}}.cri-image-display-default .elementor .cri-corso-single-image img' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
-                                '{{WRAPPER}}.cri-image-display-default .cri-corso-single-image img' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
-                                '{{WRAPPER}}.cri-image-display-background .cri-corso-single-image-bg' => 'border-radius: {{SIZE}}{{UNIT}};',
-                        ],
-                ]
+            'image_border_radius',
+            [
+                'label' => esc_html__( 'Raggio Bordo Immagine', 'cri-corsi' ),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'range' => [
+                    'px' => [ 'min' => 0, 'max' => 100 ],
+                    '%' => [ 'min' => 0, 'max' => 50 ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}.cri-image-display-default .elementor .cri-corso-single-image img' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
+                    '{{WRAPPER}}.cri-image-display-default .cri-corso-single-image img' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
+                    '{{WRAPPER}}.cri-image-display-background .cri-corso-single-image-bg' => 'border-radius: {{SIZE}}{{UNIT}};',
+                ],
+            ]
         );
 
         // --- Stile Meta Info ---
         $this->add_control(
-                'heading_meta_style',
-                [
-                        'label' => esc_html__( 'Meta Info (Prezzo/Dest.)', 'cri-corsi' ),
-                        'type' => Controls_Manager::HEADING,
-                        'separator' => 'before',
-                ]
+            'heading_meta_style',
+            [
+                'label' => esc_html__( 'Meta Info (Prezzo/Dest.)', 'cri-corsi' ),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
+        );
+         $this->add_control(
+            'meta_position',
+            [
+                'label' => esc_html__( 'Posizione Meta', 'cri-corsi' ),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => esc_html__( 'Dopo Img', 'cri-corsi' ),
+                'label_off' => esc_html__( 'Prima Img', 'cri-corsi' ),
+                'return_value' => 'after_image',
+                'default' => 'after_image',
+            ]
         );
         $this->add_control(
-                'meta_position',
-                [
-                        'label' => esc_html__( 'Posizione Meta', 'cri-corsi' ),
-                        'type' => Controls_Manager::SWITCHER,
-                        'label_on' => esc_html__( 'Dopo Img', 'cri-corsi' ),
-                        'label_off' => esc_html__( 'Prima Img', 'cri-corsi' ),
-                        'return_value' => 'after_image',
-                        'default' => 'after_image',
-                ]
+            'show_price_meta', // **NUOVO SWITCH**
+            [
+                'label'        => esc_html__( 'Mostra Prezzo', 'cri-corsi' ),
+                'type'         => Controls_Manager::SWITCHER,
+                'label_on'     => esc_html__( 'Sì', 'cri-corsi' ),
+                'label_off'    => esc_html__( 'No', 'cri-corsi' ),
+                'return_value' => 'yes',
+                'default'      => 'yes',
+            ]
         );
         $this->add_responsive_control(
-                'meta_alignment',
-                [
-                        'label' => esc_html__( 'Allineamento Meta', 'cri-corsi' ),
-                        'type' => Controls_Manager::CHOOSE,
-                        'options' => [
-                                'flex-start' => [
-                                        'title' => esc_html__( 'Sinistra', 'cri-corsi' ),
-                                        'icon' => 'eicon-text-align-left',
-                                ],
-                                'center' => [
-                                        'title' => esc_html__( 'Centro', 'cri-corsi' ),
-                                        'icon' => 'eicon-text-align-center',
-                                ],
-                                'flex-end' => [
-                                        'title' => esc_html__( 'Destra', 'cri-corsi' ),
-                                        'icon' => 'eicon-text-align-right',
-                                ],
-                        ],
-                        'default' => 'flex-start',
-                        'selectors' => [
-                                '{{WRAPPER}} .cri-corso-single-meta' => 'justify-content: {{VALUE}};',
-                        ],
-                ]
+            'meta_alignment',
+            [
+                'label' => esc_html__( 'Allineamento Meta', 'cri-corsi' ),
+                'type' => Controls_Manager::CHOOSE,
+                'options' => [
+                    'flex-start' => [
+                        'title' => esc_html__( 'Sinistra', 'cri-corsi' ),
+                        'icon' => 'eicon-text-align-left',
+                    ],
+                    'center' => [
+                        'title' => esc_html__( 'Centro', 'cri-corsi' ),
+                        'icon' => 'eicon-text-align-center',
+                    ],
+                    'flex-end' => [
+                        'title' => esc_html__( 'Destra', 'cri-corsi' ),
+                        'icon' => 'eicon-text-align-right',
+                    ],
+                ],
+                'default' => 'flex-start',
+                'selectors' => [
+                    '{{WRAPPER}} .cri-corso-single-meta' => 'justify-content: {{VALUE}};',
+                ],
+            ]
         );
         $this->add_group_control(
-                Group_Control_Typography::get_type(),
-                [
-                        'name'     => 'meta_typography',
-                        'label'    => esc_html__( 'Tipografia', 'cri-corsi' ),
-                        'selector' => '{{WRAPPER}} .cri-corso-single-meta span',
-                ]
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'meta_typography',
+                'label'    => esc_html__( 'Tipografia', 'cri-corsi' ),
+                'selector' => '{{WRAPPER}} .cri-corso-single-meta span',
+            ]
         );
-        $this->add_control(
-                'meta_color',
-                [
-                        'label'     => esc_html__( 'Colore Testo', 'cri-corsi' ),
-                        'type'      => Controls_Manager::COLOR,
-                        'selectors' => [
-                                '{{WRAPPER}} .cri-corso-single-meta span' => 'color: {{VALUE}}',
-                        ],
-                ]
+         $this->add_control(
+            'meta_color',
+            [
+                'label'     => esc_html__( 'Colore Testo', 'cri-corsi' ),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .cri-corso-single-meta span' => 'color: {{VALUE}}',
+                ],
+            ]
         );
-        $this->add_control(
-                'meta_accent_color',
-                [
-                        'label'     => esc_html__( 'Colore "Gratuito"', 'cri-corsi' ),
-                        'type'      => Controls_Manager::COLOR,
-                        'selectors' => [
-                                '{{WRAPPER}} .cri-corso-single-meta .cri-corso-prezzo.gratuito' => 'color: {{VALUE}};',
-                        ],
-                ]
+         $this->add_control(
+            'meta_accent_color',
+            [
+                'label'     => esc_html__( 'Colore Prezzo', 'cri-corsi' ),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .cri-corso-single-meta .cri-corso-prezzo' => 'color: {{VALUE}};',
+                ],
+                 'condition' => [ // Mostra solo se lo switch è attivo
+                    'show_price_meta' => 'yes',
+                 ],
+            ]
         );
 
         // --- Stile Box Contenuto ---
-        $this->add_control(
-                'heading_box_style',
-                [
-                        'label' => esc_html__( 'Box Contenuto', 'cri-corsi' ),
-                        'type' => Controls_Manager::HEADING,
-                        'separator' => 'before',
-                ]
+         $this->add_control(
+            'heading_box_style',
+            [
+                'label' => esc_html__( 'Box Contenuto', 'cri-corsi' ),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
         );
         $this->add_group_control(
-                Group_Control_Box_Shadow::get_type(),
-                [
-                        'name' => 'content_box_shadow',
-                        'label' => esc_html__( 'Ombra Box', 'cri-corsi' ),
-                        'selector' => '{{WRAPPER}} .cri-content-box',
-                ]
+            Group_Control_Box_Shadow::get_type(),
+            [
+                'name' => 'content_box_shadow',
+                'label' => esc_html__( 'Ombra Box', 'cri-corsi' ),
+                'selector' => '{{WRAPPER}} .cri-content-box',
+            ]
         );
-        $this->add_responsive_control( // **NUOVO**
-                'content_box_gap', // **NUOVO**
-                [
-                        'label' => esc_html__( 'Spazio tra Box', 'cri-corsi' ),
-                        'type' => Controls_Manager::SLIDER,
-                        'size_units' => [ 'px', 'em', 'rem' ],
-                        'range' => [
-                                'px' => [ 'min' => 0, 'max' => 100 ],
-                                'em' => [ 'min' => 0, 'max' => 5, 'step' => 0.1 ],
-                                'rem' => [ 'min' => 0, 'max' => 5, 'step' => 0.1 ],
-                        ],
-                        'default' => [ 'unit' => 'px', 'size' => 30 ], // Valore di default
-                        'selectors' => [
-                            // Applica un margine inferiore a tutti i box eccetto l'ultimo
-                                '{{WRAPPER}} .cri-content-box:not(:last-child)' => 'margin-bottom: {{SIZE}}{{UNIT}};',
-                        ],
-                ]
+        $this->add_responsive_control(
+            'content_box_gap',
+            [
+                'label' => esc_html__( 'Spazio tra Box', 'cri-corsi' ),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', 'em', 'rem' ],
+                'range' => [
+                    'px' => [ 'min' => 0, 'max' => 100 ],
+                ],
+                'default' => [ 'unit' => 'px', 'size' => 30 ],
+                'selectors' => [
+                    '{{WRAPPER}} .cri-content-box:not(:last-child)' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+                ],
+            ]
         );
 
 
         // --- Stile Titoli Sezioni (Mappa, Form) ---
         $this->add_control(
-                'heading_section_titles_style',
-                [
-                        'label' => esc_html__( 'Titoli Sezioni (Mappa, Form)', 'cri-corsi' ),
-                        'type' => Controls_Manager::HEADING,
-                        'separator' => 'before',
-                ]
+            'heading_section_titles_style',
+            [
+                'label' => esc_html__( 'Titoli Sezioni (Mappa, Form)', 'cri-corsi' ),
+                'type' => Controls_Manager::HEADING,
+                'separator' => 'before',
+            ]
         );
-        $this->add_group_control(
-                Group_Control_Typography::get_type(),
-                [
-                        'name'     => 'section_title_typography',
-                        'label'    => esc_html__( 'Tipografia', 'cri-corsi' ),
-                        'selector' => '{{WRAPPER}} .cri-corso-single-map-container h2, {{WRAPPER}} .cri-corso-booking-form h2',
-                ]
-        );
-        $this->add_control(
-                'heading_map_color',
-                [
-                        'label'     => esc_html__( 'Colore Titolo Mappa', 'cri-corsi' ),
-                        'type'      => Controls_Manager::COLOR,
-                        'selectors' => [
-                                '{{WRAPPER}} .cri-corso-single-map-container h2' => 'color: {{VALUE}}',
-                        ],
-                ]
+         $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'section_title_typography',
+                'label'    => esc_html__( 'Tipografia', 'cri-corsi' ),
+                'selector' => '{{WRAPPER}} .cri-corso-single-map-container h2, {{WRAPPER}} .cri-corso-booking-form h2, {{WRAPPER}} .cri-corso-booking-free h2',
+            ]
         );
         $this->add_control(
-                'heading_form_color',
-                [
-                        'label'     => esc_html__( 'Colore Titolo Form', 'cri-corsi' ),
-                        'type'      => Controls_Manager::COLOR,
-                        'selectors' => [
-                                '{{WRAPPER}} .cri-corso-booking-form h2' => 'color: {{VALUE}}',
-                        ],
-                ]
+            'heading_map_color',
+            [
+                'label'     => esc_html__( 'Colore Titolo Mappa', 'cri-corsi' ),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .cri-corso-single-map-container h2' => 'color: {{VALUE}}',
+                ],
+            ]
+        );
+         $this->add_control(
+            'heading_form_color',
+            [
+                'label'     => esc_html__( 'Colore Titolo Form', 'cri-corsi' ),
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .cri-corso-booking-form h2' => 'color: {{VALUE}}',
+                    '{{WRAPPER}} .cri-corso-booking-free h2' => 'color: {{VALUE}}',
+                ],
+            ]
         );
 
-        // --- Stile Pulsante Iscrizione ---
-        $this->add_control(
-                'heading_button_style',
-                [
-                        'label' => esc_html__( 'Pulsante Iscrizione', 'cri-corsi' ),
-                        'type' => Controls_Manager::HEADING,
-                        'separator' => 'before',
-                ]
-        );
-        $this->start_controls_tabs( 'button_style_tabs' );
-        $this->start_controls_tab(
+         // --- Stile Pulsante Iscrizione ---
+         $this->add_control(
+             'heading_button_style',
+             [
+                 'label' => esc_html__( 'Pulsante Iscrizione/Contatto', 'cri-corsi' ),
+                 'type' => Controls_Manager::HEADING,
+                 'separator' => 'before',
+             ]
+         );
+         
+         // **NUOVO**: URL Redirect per Corso Gratuito
+         $this->add_control(
+            'free_course_redirect_url',
+            [
+                'label' => esc_html__( 'URL Redirect Corso Gratuito', 'cri-corsi' ),
+                'type' => Controls_Manager::URL,
+                'placeholder' => esc_html__( 'https://tuosito.it/contatti', 'cri-corsi' ),
+                'description' => esc_html__( 'Link alla pagina contatti per i corsi gratuiti.', 'cri-corsi' ),
+                'dynamic' => [ 'active' => true ],
+            ]
+         );
+
+         $this->start_controls_tabs( 'button_style_tabs' );
+            $this->start_controls_tab(
                 'button_style_normal',
                 [ 'label' => esc_html__( 'Normale', 'cri-corsi' ) ]
-        );
-        $this->add_control(
-                'button_bg_color',
-                [
+            );
+                $this->add_control(
+                    'button_bg_color',
+                    [
                         'label' => esc_html__( 'Colore Sfondo', 'cri-corsi' ),
                         'type' => Controls_Manager::COLOR,
                         'selectors' => [
-                                '{{WRAPPER}} .cri-corso-button' => 'background-color: {{VALUE}};',
+                            '{{WRAPPER}} .cri-corso-button' => 'background-color: {{VALUE}};',
                         ],
-                ]
-        );
-        $this->add_control(
-                'button_text_color',
-                [
+                    ]
+                );
+                $this->add_control(
+                    'button_text_color',
+                    [
                         'label' => esc_html__( 'Colore Testo', 'cri-corsi' ),
                         'type' => Controls_Manager::COLOR,
                         'selectors' => [
-                                '{{WRAPPER}} .cri-corso-button' => 'color: {{VALUE}};',
+                            '{{WRAPPER}} .cri-corso-button' => 'color: {{VALUE}};',
                         ],
-                ]
-        );
-        $this->end_controls_tab();
-        $this->start_controls_tab(
+                    ]
+                );
+            $this->end_controls_tab();
+            $this->start_controls_tab(
                 'button_style_hover',
                 [ 'label' => esc_html__( 'Hover', 'cri-corsi' ) ]
-        );
-        $this->add_control(
-                'button_bg_color_hover',
-                [
+            );
+                $this->add_control(
+                    'button_bg_color_hover',
+                    [
                         'label' => esc_html__( 'Colore Sfondo', 'cri-corsi' ),
                         'type' => Controls_Manager::COLOR,
                         'selectors' => [
-                                '{{WRAPPER}} .cri-corso-button:hover, {{WRAPPER}} .cri-corso-button:focus' => 'background-color: {{VALUE}};',
+                            '{{WRAPPER}} .cri-corso-button:hover, {{WRAPPER}} .cri-corso-button:focus' => 'background-color: {{VALUE}};',
                         ],
-                ]
-        );
-        $this->add_control(
-                'button_text_color_hover',
-                [
+                    ]
+                );
+                $this->add_control(
+                    'button_text_color_hover',
+                    [
                         'label' => esc_html__( 'Colore Testo', 'cri-corsi' ),
                         'type' => Controls_Manager::COLOR,
                         'selectors' => [
-                                '{{WRAPPER}} .cri-corso-button:hover, {{WRAPPER}} .cri-corso-button:focus' => 'color: {{VALUE}};',
+                            '{{WRAPPER}} .cri-corso-button:hover, {{WRAPPER}} .cri-corso-button:focus' => 'color: {{VALUE}};',
                         ],
-                ]
-        );
-        $this->end_controls_tab();
-        $this->end_controls_tabs();
-        $this->add_control(
-                'button_border_radius',
-                [
-                        'label' => esc_html__( 'Raggio Bordo Pulsante', 'cri-corsi' ),
-                        'type' => Controls_Manager::SLIDER,
-                        'size_units' => [ 'px', '%' ],
-                        'range' => [ 'px' => [ 'min' => 0, 'max' => 50 ] ],
-                        'selectors' => [
-                                '{{WRAPPER}} .cri-corso-button' => 'border-radius: {{SIZE}}{{UNIT}};',
-                        ],
-                        'separator' => 'before',
-                ]
-        );
+                    ]
+                );
+            $this->end_controls_tab();
+         $this->end_controls_tabs();
+          $this->add_control(
+             'button_border_radius',
+             [
+                 'label' => esc_html__( 'Raggio Bordo Pulsante', 'cri-corsi' ),
+                 'type' => Controls_Manager::SLIDER,
+                 'size_units' => [ 'px', '%' ],
+                 'range' => [ 'px' => [ 'min' => 0, 'max' => 50 ] ],
+                 'selectors' => [
+                     '{{WRAPPER}} .cri-corso-button' => 'border-radius: {{SIZE}}{{UNIT}};',
+                 ],
+                 'separator' => 'before',
+             ]
+         );
 
 
         $this->end_controls_section();
@@ -392,7 +417,7 @@ class CRI_Corso_Single_Widget extends Widget_Base {
 
         if ( ! is_singular( 'cri_corso' ) ) {
             if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-                echo '<p>' . esc_html__( 'Widget Contenuto Singolo Corso CRI - Visualizza l\'anteprima per vedere il contenuto.', 'cri-corsi' ) . '</p>';
+                 echo '<p>' . esc_html__( 'Widget Contenuto Singolo Corso CRI - Visualizza l\'anteprima per vedere il contenuto.', 'cri-corsi' ) . '</p>';
             }
             return;
         }
@@ -409,12 +434,11 @@ class CRI_Corso_Single_Widget extends Widget_Base {
         $featured_img_url = get_the_post_thumbnail_url( $post_id, 'large' );
 
         $is_pagamento = ! empty( $prezzo ) && ! empty( $prodotto_id ) && class_exists( 'WooCommerce' );
-        $is_gratuito = ! $is_pagamento;
         $form_handler = new Form_Handler();
         if ( ! is_array( $date_orari ) ) $date_orari = [];
 
         // Funzione helper per renderizzare i meta
-        $render_meta = function() use ($destinazione, $is_gratuito, $is_pagamento, $prezzo) {
+        $render_meta = function() use ($destinazione, $is_pagamento, $prezzo, $settings) {
             ?>
             <div class="cri-corso-single-meta">
                 <?php if ( ! empty( $destinazione ) ) : ?>
@@ -423,14 +447,14 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                         <?php echo esc_html( $destinazione === 'aziende' ? __( 'Aziende', 'cri-corsi' ) : __( 'Popolazione', 'cri-corsi' ) ); ?>
                     </span>
                 <?php endif; ?>
-                <span class="cri-corso-prezzo <?php echo $is_gratuito ? 'gratuito' : ''; ?>">
-                    <strong><?php esc_html_e( 'Prezzo:', 'cri-corsi' ); ?></strong>
-                    <?php if ( $is_pagamento ) : ?>
+                
+                <?php // **MODIFICATO**: Mostra il prezzo solo se è a pagamento E lo switch è 'yes' ?>
+                <?php if ( $is_pagamento && 'yes' === $settings['show_price_meta'] ) : ?>
+                    <span class="cri-corso-prezzo">
+                        <strong><?php esc_html_e( 'Prezzo:', 'cri-corsi' ); ?></strong>
                         <?php echo '€ ' . esc_html( number_format_i18n( (float) $prezzo, 2 ) ); ?>
-                    <?php else : ?>
-                        <?php esc_html_e( 'Gratuito', 'cri-corsi' ); ?>
-                    <?php endif; ?>
-                </span>
+                    </span>
+                <?php endif; ?>
             </div>
             <?php
         };
@@ -440,8 +464,8 @@ class CRI_Corso_Single_Widget extends Widget_Base {
             if ( has_post_thumbnail() ) {
                 if ( $settings['image_display'] === 'background' ) {
                     printf(
-                            '<div class="cri-corso-single-image-bg" style="background-image: url(%s);"></div>',
-                            esc_url( $featured_img_url )
+                        '<div class="cri-corso-single-image-bg" style="background-image: url(%s);"></div>',
+                        esc_url( $featured_img_url )
                     );
                 } else {
                     echo '<div class="cri-corso-single-image">';
@@ -473,16 +497,16 @@ class CRI_Corso_Single_Widget extends Widget_Base {
             </div>
 
             <?php if ( ! empty( $cosa_imparerai ) || ! empty( $a_chi_rivolto ) ) : ?>
-                <div class="cri-corso-tabs cri-content-box">
-                    <ul class="cri-tabs-nav">
-                        <?php if ( ! empty( $cosa_imparerai ) ) : ?><li><a href="#tab-learn" class="active"><?php esc_html_e( 'Cosa Imparerai', 'cri-corsi' ); ?></a></li><?php endif; ?>
-                        <?php if ( ! empty( $a_chi_rivolto ) ) : ?><li <?php if( empty( $cosa_imparerai ) ) echo 'class="active"'; ?>><a href="#tab-target"><?php esc_html_e( 'A Chi è Rivolto', 'cri-corsi' ); ?></a></li><?php endif; ?>
-                    </ul>
-                    <div class="cri-tabs-content">
-                        <?php if ( ! empty( $cosa_imparerai ) ) : ?><div id="tab-learn" class="cri-tab-pane active"><?php echo wp_kses_post( $cosa_imparerai ); ?></div><?php endif; ?>
-                        <?php if ( ! empty( $a_chi_rivolto ) ) : ?><div id="tab-target" class="cri-tab-pane <?php if( empty( $cosa_imparerai ) ) echo 'active'; ?>"><?php echo wp_kses_post( $a_chi_rivolto ); ?></div><?php endif; ?>
-                    </div>
-                </div>
+             <div class="cri-corso-tabs cri-content-box">
+                 <ul class="cri-tabs-nav">
+                     <?php if ( ! empty( $cosa_imparerai ) ) : ?><li><a href="#tab-learn" class="active"><?php esc_html_e( 'Cosa Imparerai', 'cri-corsi' ); ?></a></li><?php endif; ?>
+                     <?php if ( ! empty( $a_chi_rivolto ) ) : ?><li <?php if( empty( $cosa_imparerai ) ) echo 'class="active"'; ?>><a href="#tab-target"><?php esc_html_e( 'A Chi è Rivolto', 'cri-corsi' ); ?></a></li><?php endif; ?>
+                 </ul>
+                 <div class="cri-tabs-content">
+                     <?php if ( ! empty( $cosa_imparerai ) ) : ?><div id="tab-learn" class="cri-tab-pane active"><?php echo wp_kses_post( $cosa_imparerai ); ?></div><?php endif; ?>
+                     <?php if ( ! empty( $a_chi_rivolto ) ) : ?><div id="tab-target" class="cri-tab-pane <?php if( empty( $cosa_imparerai ) ) echo 'active'; ?>"><?php echo wp_kses_post( $a_chi_rivolto ); ?></div><?php endif; ?>
+                 </div>
+             </div>
             <?php endif; ?>
 
 
@@ -495,69 +519,93 @@ class CRI_Corso_Single_Widget extends Widget_Base {
                 </div>
             <?php endif; ?>
 
-            <div class="cri-corso-booking-form cri-content-box">
-                <h2 class="cri-form-heading"><?php esc_html_e( 'Iscriviti al Corso', 'cri-corsi' ); ?></h2>
-                <form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
-                    <input type="hidden" name="action" value="cri_prenota_corso">
-                    <input type="hidden" name="corso_id" value="<?php echo esc_attr( $post_id ); ?>">
-                    <?php if ( $is_pagamento ) : ?><input type="hidden" name="prodotto_id" value="<?php echo esc_attr( $prodotto_id ); ?>"><?php endif; ?>
-                    <?php wp_nonce_field( 'cri_corso_booking_form', 'cri_corso_nonce' ); ?>
+            <?php // Logica condizionale per il Form ?>
+            <?php if ( $is_pagamento ) : ?>
+                <div class="cri-corso-booking-form cri-content-box">
+                    <h2 class="cri-form-heading"><?php esc_html_e( 'Iscriviti al Corso', 'cri-corsi' ); ?></h2>
+                    <form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+                        <input type="hidden" name="action" value="cri_prenota_corso">
+                        <input type="hidden" name="corso_id" value="<?php echo esc_attr( $post_id ); ?>">
+                        <input type="hidden" name="prodotto_id" value="<?php echo esc_attr( $prodotto_id ); ?>">
+                        <?php wp_nonce_field( 'cri_corso_booking_form', 'cri_corso_nonce' ); ?>
 
-                    <div class="cri-form-group">
-                        <label for="corso_scelta_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Seleziona data e durata:', 'cri-corsi' ); ?></label>
-                        <select name="corso_scelta" id="corso_scelta_<?php echo esc_attr( $post_id ); ?>" required>
-                            <option value=""><?php esc_html_e( 'Scegli un\'opzione...', 'cri-corsi' ); ?></option>
-                            <?php foreach ( $date_orari as $index => $orario ) :
-                                $data_corso = $orario['data_corso'] ?? '';
-                                $durata = $orario['durata_corso'] ?? '';
-                                $posti_totali = (int) ( $orario['posti_disponibili'] ?? 0 );
-                                $posti_occupati = $form_handler->count_booked_seats( $post_id, $index );
-                                $is_full = $posti_occupati >= $posti_totali;
-                                $label = sprintf( '%s (%s)', date_i18n( 'l d/m/Y', strtotime( $data_corso ) ), esc_html($durata) );
-                                ?>
-                                <option value="<?php echo esc_attr( $index ); ?>" <?php disabled( $is_full, true ); ?>>
-                                    <?php echo esc_html( $label ); ?>
-                                    <?php if ( $is_full ) echo esc_html__( ' (Completo)', 'cri-corsi' ); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="cri-form-group">
-                        <label for="nome_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Nome', 'cri-corsi' ); ?></label>
-                        <input type="text" name="nome" id="nome_<?php echo esc_attr( $post_id ); ?>" required>
-                    </div>
-                    <div class="cri-form-group">
-                        <label for="cognome_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Cognome', 'cri-corsi' ); ?></label>
-                        <input type="text" name="cognome" id="cognome_<?php echo esc_attr( $post_id ); ?>" required>
-                    </div>
-                    <div class="cri-form-group">
-                        <label for="email_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Email', 'cri-corsi' ); ?></label>
-                        <input type="email" name="email" id="email_<?php echo esc_attr( $post_id ); ?>" required>
-                    </div>
-                    <div class="cri-form-group">
-                        <label for="telefono_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Telefono', 'cri-corsi' ); ?></label>
-                        <input type="tel" name="telefono" id="telefono_<?php echo esc_attr( $post_id ); ?>">
-                    </div>
-
-                    <?php if ( 'aziende' === $destinazione ) : ?>
                         <div class="cri-form-group">
-                            <label for="ragione_sociale_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Ragione Sociale', 'cri-corsi' ); ?></label>
-                            <input type="text" name="ragione_sociale" id="ragione_sociale_<?php echo esc_attr( $post_id ); ?>" required>
+                            <label for="corso_scelta_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Seleziona data e durata:', 'cri-corsi' ); ?></label>
+                            <select name="corso_scelta" id="corso_scelta_<?php echo esc_attr( $post_id ); ?>" required>
+                                <option value=""><?php esc_html_e( 'Scegli un\'opzione...', 'cri-corsi' ); ?></option>
+                                <?php foreach ( $date_orari as $index => $orario ) :
+                                    $data_corso = $orario['data_corso'] ?? '';
+                                    $durata = $orario['durata_corso'] ?? '';
+                                    $posti_totali = (int) ( $orario['posti_disponibili'] ?? 0 );
+                                    $posti_occupati = $form_handler->count_booked_seats( $post_id, $index );
+                                    $is_full = $posti_occupati >= $posti_totali;
+                                    $label = sprintf( '%s (%s)', date_i18n( 'l d/m/Y', strtotime( $data_corso ) ), esc_html($durata) );
+                                    ?>
+                                    <option value="<?php echo esc_attr( $index ); ?>" <?php disabled( $is_full, true ); ?>>
+                                        <?php echo esc_html( $label ); ?>
+                                        <?php if ( $is_full ) echo esc_html__( ' (Completo)', 'cri-corsi' ); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="cri-form-group">
+                            <label for="nome_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Nome', 'cri-corsi' ); ?></label>
+                            <input type="text" name="nome" id="nome_<?php echo esc_attr( $post_id ); ?>" required>
                         </div>
                         <div class="cri-form-group">
-                            <label for="partita_iva_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Partita IVA', 'cri-corsi' ); ?></label>
-                            <input type="text" name="partita_iva" id="partita_iva_<?php echo esc_attr( $post_id ); ?>" required>
+                            <label for="cognome_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Cognome', 'cri-corsi' ); ?></label>
+                            <input type="text" name="cognome" id="cognome_<?php echo esc_attr( $post_id ); ?>" required>
                         </div>
-                    <?php endif; ?>
+                        <div class="cri-form-group">
+                            <label for="email_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Email', 'cri-corsi' ); ?></label>
+                            <input type="email" name="email" id="email_<?php echo esc_attr( $post_id ); ?>" required>
+                        </div>
+                        <div class="cri-form-group">
+                            <label for="telefono_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Telefono', 'cri-corsi' ); ?></label>
+                            <input type="tel" name="telefono" id="telefono_<?php echo esc_attr( $post_id ); ?>">
+                        </div>
 
+                        <?php if ( 'aziende' === $destinazione ) : ?>
+                            <div class="cri-form-group">
+                                <label for="ragione_sociale_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Ragione Sociale', 'cri-corsi' ); ?></label>
+                                <input type="text" name="ragione_sociale" id="ragione_sociale_<?php echo esc_attr( $post_id ); ?>" required>
+                            </div>
+                            <div class="cri-form-group">
+                                <label for="partita_iva_<?php echo esc_attr( $post_id ); ?>"><?php esc_html_e( 'Partita IVA', 'cri-corsi' ); ?></label>
+                                <input type="text" name="partita_iva" id="partita_iva_<?php echo esc_attr( $post_id ); ?>" required>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="cri-form-submit">
+                            <button type="submit" class="cri-corso-button">
+                                <?php esc_html_e( 'Iscriviti e Paga', 'cri-corsi' ); ?>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            <?php else : // Se il corso è gratuito ?>
+                <div class="cri-corso-booking-free cri-content-box">
+                    <h2 class="cri-form-heading"><?php esc_html_e( 'Informazioni sul Corso', 'cri-corsi' ); ?></h2>
+                    <p><?php esc_html_e( 'Questo corso è gratuito, ma richiede la registrazione. Per iscriverti, ti preghiamo di contattare la segreteria.', 'cri-corsi' ); ?></p>
+                    
+                    <?php
+                    // **NUOVO**: Recupera l'URL dal controllo
+                    $redirect_url = $settings['free_course_redirect_url']['url'] ?? '';
+                    $target = $settings['free_course_redirect_url']['is_external'] ? ' target="_blank"' : '';
+                    $nofollow = $settings['free_course_redirect_url']['nofollow'] ? ' rel="nofollow"' : '';
+                    
+                    // Mostra il pulsante solo se l'URL è stato impostato
+                    if ( ! empty( $redirect_url ) ) :
+                    ?>
                     <div class="cri-form-submit">
-                        <button type="submit" class="cri-corso-button">
-                            <?php echo $is_pagamento ? esc_html__( 'Iscriviti e Paga', 'cri-corsi' ) : esc_html__( 'Prenota Ora', 'cri-corsi' ); ?>
-                        </button>
+                         <a href="<?php echo esc_url( $redirect_url ); ?>" class="cri-corso-button" <?php echo $target; ?> <?php echo $nofollow; ?>>
+                            <?php esc_html_e( 'Contatta la Segreteria', 'cri-corsi' ); ?>
+                         </a>
                     </div>
-                </form>
-            </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; // Fine blocco form condizionale ?>
 
 
             <footer class="entry-footer">
