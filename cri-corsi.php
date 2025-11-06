@@ -36,10 +36,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 use CRICorsi\Includes\Post_Types;
 use CRICorsi\Includes\Meta_Boxes;
 use CRICorsi\Includes\Form_Handler;
-use CRICorsi\Includes\Admin_Columns;
+use CRICorsi\Includes\Admin\Admin_Columns; // <-- MODIFICATO: Aggiunto \Admin
 use CRICorsi\Includes\Admin\Teacher_Panel;
 use CRICorsi\Includes\Admin\Admin_Footer;
-use CRICorsi\Includes\Admin\Admin_Utilities; // <-- Importato
+use CRICorsi\Includes\Admin\Admin_Utilities;
 use CRICorsi\Includes\Plugin_Updater;
 use CRICorsi\Includes\Elementor\Elementor_Widgets;
 use CRICorsi\Includes\User_Roles;
@@ -138,7 +138,7 @@ final class CRI_Corsi {
 
         // Classi che funzionano solo nell'area admin
         if ( is_admin() ) {
-            new Admin_Columns();
+            new Admin_Columns(); // Non serve cambiare qui grazie all'istruzione 'use' aggiornata
             new Teacher_Panel();
             new Admin_Footer();
             new User_Roles();
@@ -147,8 +147,6 @@ final class CRI_Corsi {
         // Carica l'integrazione WC solo se WooCommerce è attivo
         if ( class_exists( 'WooCommerce' ) ) {
             new WooCommerce_Integration();
-            // **SPOSTATO**: Admin_Utilities deve essere caricato anche sul frontend (per la pagina carrello)
-            // ma solo se WC è attivo.
             new Admin_Utilities(); 
         }
 
