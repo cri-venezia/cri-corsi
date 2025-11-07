@@ -36,10 +36,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 use CRICorsi\Includes\Post_Types;
 use CRICorsi\Includes\Meta_Boxes;
 use CRICorsi\Includes\Form_Handler;
-use CRICorsi\Includes\Admin\Admin_Columns; // <-- MODIFICATO: Aggiunto \Admin
+use CRICorsi\Includes\Admin\Admin_Columns;
 use CRICorsi\Includes\Admin\Teacher_Panel;
 use CRICorsi\Includes\Admin\Admin_Footer;
 use CRICorsi\Includes\Admin\Admin_Utilities;
+use CRICorsi\Includes\Admin\Dashboard_Widget; // <-- NUOVO
 use CRICorsi\Includes\Plugin_Updater;
 use CRICorsi\Includes\Elementor\Elementor_Widgets;
 use CRICorsi\Includes\User_Roles;
@@ -138,10 +139,11 @@ final class CRI_Corsi {
 
         // Classi che funzionano solo nell'area admin
         if ( is_admin() ) {
-            new Admin_Columns(); // Non serve cambiare qui grazie all'istruzione 'use' aggiornata
+            new Admin_Columns();
             new Teacher_Panel();
             new Admin_Footer();
             new User_Roles();
+            new Dashboard_Widget(); // <-- NUOVO
         }
 
         // Carica l'integrazione WC solo se WooCommerce è attivo
