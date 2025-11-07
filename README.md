@@ -47,7 +47,7 @@ Include un pannello di gestione semplificato per i docenti, permettendo loro di 
 ### Installazione (per Utente Finale)
 * Naviga nella sezione "Releases" di questo repository GitHub.
 
-* Scarica il file .zip più recente (es. cri-corsi-v1.0.6.zip).
+* Scarica il file .zip più recente (es. cri-corsi-v1.1.1.zip).
 
 * Dal tuo sito WordPress, vai su Plugin > Aggiungi nuovo > Carica plugin.
 
