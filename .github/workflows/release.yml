@@ -65,7 +65,7 @@ jobs:
 
       # 7. Crea la Release su GitHub e carica lo ZIP
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }} # Specificato esplicitamente
           files: ${{ env.ZIP_FILE_NAME }} # Il file ZIP da allegare
